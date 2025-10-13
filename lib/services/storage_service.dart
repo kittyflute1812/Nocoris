@@ -44,9 +44,15 @@ class StorageService {
   List<Map<String, dynamic>>? loadJsonList(String key) {
     final jsonString = _prefs.getString(key);
     if (jsonString == null) return null;
-    return List<Map<String, dynamic>>.from(
-      jsonDecode(jsonString) as List,
-    );
+    try {
+      final decoded = jsonDecode(jsonString);
+      if (decoded is List) {
+        return List<Map<String, dynamic>>.from(decoded);
+      }
+    } catch (e) {
+      _logger.e('Failed to decode json list: $e');
+    }
+    return null;
   }
 
   /// アイテムリストを保存
