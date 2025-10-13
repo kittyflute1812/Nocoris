@@ -61,7 +61,7 @@ class Item {
   factory Item.create({required String name, required int initialCount}) {
     final now = DateTime.now();
     return Item(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      id: const Uuid().v4(),
       name: name,
       count: initialCount,
       createdAt: now,
