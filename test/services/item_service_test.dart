@@ -9,10 +9,16 @@ void main() {
     late StorageService storageService;
 
     setUp(() async {
+      // テストごとにSharedPreferencesをリセット
       SharedPreferences.setMockInitialValues({});
       final prefs = await SharedPreferences.getInstance();
       storageService = StorageService(prefs);
       itemService = ItemService(storageService);
+      // 既存のデータをクリア
+      await Future.forEach(
+        List.from(itemService.items),
+        (item) => itemService.deleteItem(item.id),
+      );
     });
 
     test('createItem()が正しく動作すること', () async {
@@ -44,6 +50,8 @@ void main() {
       
       expect(result, true);
       expect(itemService.getItemById(item.id)!.count, 10);
+      // 名前は変更できないことを確認
+      expect(itemService.getItemById(item.id)!.name, 'Test Item');
     });
 
     test('存在しないIDのupdateItem()がfalseを返すこと', () async {
