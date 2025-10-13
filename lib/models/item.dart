@@ -1,7 +1,6 @@
 
 import 'package:uuid/uuid.dart';
 
-/// アイテムを表すモデルクラス
 class Item {
   final String id;
   
@@ -64,7 +63,7 @@ class Item {
     final now = DateTime.now();
     const uuid = Uuid();
     return Item(
-      id: uuid.v4(),  // UUID v4を使用して一意のIDを生成
+      id: uuid.v4(), 
       name: name,
       count: initialCount,
       createdAt: now,
