@@ -20,7 +20,7 @@ class ItemService {
   Item? getItemById(String id) {
     try {
       return _items.firstWhere((item) => item.id == id);
-    } catch (e) {
+    } on StateError {
       return null;
     }
   }
