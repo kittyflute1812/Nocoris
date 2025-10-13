@@ -1,7 +1,10 @@
+import 'package:logger/logger.dart';
+
 import '../models/item.dart';
 import 'storage_service.dart';
 
 class ItemService {
+  final _logger = Logger();
   final StorageService _storage;
   List<Item> _items = [];
 
@@ -72,7 +75,14 @@ class ItemService {
   void _loadItems() {
     final itemsJson = _storage.loadItems();
     if (itemsJson != null) {
-      _items = itemsJson.map((json) => Item.fromJson(json)).toList();
+      _items = itemsJson.map((json) {
+        try {
+          return Item.fromJson(json);
+        } catch (e) {
+          _logger.e('Failed to load item: $e');
+          return null;
+        }
+      }).whereType<Item>().toList();
     }
   }
 
