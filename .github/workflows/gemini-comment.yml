@@ -1,0 +1,32 @@
+name: Add Gemini Comments
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  add-comment:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Add summary comment
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '/gemini summary'
+            })
+      - name: Add review comment
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '/gemini review'
+            })
