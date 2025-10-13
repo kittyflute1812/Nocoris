@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class StorageService {
+  final _logger = Logger();
   static const String _itemsKey = 'items';
   final SharedPreferences _prefs;
 
@@ -22,7 +24,15 @@ class StorageService {
   Map<String, dynamic>? loadJson(String key) {
     final jsonString = _prefs.getString(key);
     if (jsonString == null) return null;
-    return jsonDecode(jsonString) as Map<String, dynamic>;
+    try {
+      final decoded = jsonDecode(jsonString);
+      if (decoded is Map<String, dynamic>) {
+        return decoded;
+      }
+    } catch (e) {
+      _logger.e('Failed to decode json: $e');
+    }
+    return null;
   }
 
   /// 複数のJSONデータをリストとして保存
