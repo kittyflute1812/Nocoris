@@ -53,7 +53,11 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
   }
 
   Future<void> _saveItem() async {
-    if (_formKey.currentState!.validate() && _itemService != null) {
+    if (!_formKey.currentState!.validate() || _itemService == null) {
+      return;
+    }
+
+    try {
       final name = _nameController.text;
       final count = int.parse(_countController.text);
 
@@ -66,7 +70,16 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
       }
 
       if (mounted) {
-        Navigator.of(context).pop();
+        Navigator.of(context).pop(true);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('エラーが発生しました: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
       }
     }
   }

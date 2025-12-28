@@ -83,8 +83,21 @@ class _HomeScreenState extends State<HomeScreen> {
     );
 
     if (confirmed == true) {
-      await _itemService.deleteItem(itemId);
-      setState(() {});
+      try {
+        await _itemService.deleteItem(itemId);
+        if (mounted) {
+          setState(() {});
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('エラーが発生しました: ${e.toString()}'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
     }
   }
 
@@ -123,12 +136,42 @@ class _HomeScreenState extends State<HomeScreen> {
                       key: ValueKey(item.id),
                       item: item,
                       onDecrement: () async {
-                        await _itemService.decrementItem(item.id);
-                        setState(() {});
+                        if (!mounted) return;
+                        final messenger = ScaffoldMessenger.of(context);
+                        try {
+                          await _itemService.decrementItem(item.id);
+                          if (mounted) {
+                            setState(() {});
+                          }
+                        } catch (e) {
+                          if (mounted) {
+                            messenger.showSnackBar(
+                              SnackBar(
+                                content: Text('エラーが発生しました: ${e.toString()}'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+                        }
                       },
                       onIncrement: () async {
-                        await _itemService.incrementItem(item.id);
-                        setState(() {});
+                        if (!mounted) return;
+                        final messenger = ScaffoldMessenger.of(context);
+                        try {
+                          await _itemService.incrementItem(item.id);
+                          if (mounted) {
+                            setState(() {});
+                          }
+                        } catch (e) {
+                          if (mounted) {
+                            messenger.showSnackBar(
+                              SnackBar(
+                                content: Text('エラーが発生しました: ${e.toString()}'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+                        }
                       },
                       onEdit: () => _showItemFormDialog(item.id),
                       onDelete: () => _showDeleteConfirmation(item.id),
