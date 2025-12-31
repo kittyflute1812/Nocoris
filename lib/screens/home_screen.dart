@@ -137,7 +137,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       item: item,
                       onDecrement: () async {
                         if (!mounted) return;
-                        final messenger = ScaffoldMessenger.of(context);
                         try {
                           await _itemService.decrementItem(item.id);
                           if (mounted) {
@@ -145,7 +144,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           }
                         } catch (e) {
                           if (mounted) {
-                            messenger.showSnackBar(
+                            ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text('エラーが発生しました: ${e.toString()}'),
                                 backgroundColor: Colors.red,
@@ -156,7 +155,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       },
                       onIncrement: () async {
                         if (!mounted) return;
-                        final messenger = ScaffoldMessenger.of(context);
                         try {
                           await _itemService.incrementItem(item.id);
                           if (mounted) {
@@ -164,7 +162,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           }
                         } catch (e) {
                           if (mounted) {
-                            messenger.showSnackBar(
+                            ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text('エラーが発生しました: ${e.toString()}'),
                                 backgroundColor: Colors.red,

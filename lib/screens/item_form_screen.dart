@@ -61,15 +61,28 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
       final name = _nameController.text;
       final count = int.parse(_countController.text);
 
+      bool success = false;
       if (widget.item != null) {
         // 編集モード
-        await _itemService!.updateItem(widget.item!.id, count);
+        success = await _itemService!.updateItem(widget.item!.id, count);
+        if (!success) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('アイテムの更新に失敗しました。アイテムが削除された可能性があります。'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+          return;
+        }
       } else {
         // 作成モード
         await _itemService!.createItem(name, count);
+        success = true;
       }
 
-      if (mounted) {
+      if (mounted && success) {
         Navigator.of(context).pop(true);
       }
     } catch (e) {
