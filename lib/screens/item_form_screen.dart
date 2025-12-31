@@ -23,6 +23,7 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
   final _countController = TextEditingController();
   ItemService? _itemService;
   bool _isLoading = true;
+  String? _errorMessage;
 
   @override
   void initState() {
@@ -37,11 +38,21 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
   }
 
   Future<void> _initializeItemService() async {
-    _itemService = widget.itemService ?? await ItemService.create();
-    if (mounted) {
-      setState(() {
-        _isLoading = false;
-      });
+    try {
+      _itemService = widget.itemService ?? await ItemService.create();
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _errorMessage = null;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _errorMessage = '初期化に失敗しました: ${e.toString()}';
+        });
+      }
     }
   }
 
@@ -112,6 +123,40 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
+          : _errorMessage != null
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.error_outline,
+                        size: 64,
+                        color: Colors.red,
+                      ),
+                      const SizedBox(height: 16),
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text(
+                          _errorMessage!,
+                          style: const TextStyle(fontSize: 18, color: Colors.red),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          setState(() {
+                            _isLoading = true;
+                            _errorMessage = null;
+                          });
+                          _initializeItemService();
+                        },
+                        icon: const Icon(Icons.refresh),
+                        label: const Text('再試行'),
+                      ),
+                    ],
+                  ),
+                )
           : Form(
               key: _formKey,
               child: ListView(

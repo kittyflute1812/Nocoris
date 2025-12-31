@@ -18,6 +18,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   late ItemService _itemService;
   bool _isLoading = true;
+  String? _errorMessage;
 
   @override
   void initState() {
@@ -32,11 +33,21 @@ class _HomeScreenState extends State<HomeScreen> {
 
   /// ItemServiceの初期化
   Future<void> _initializeItemService() async {
-    _itemService = await ItemService.create();
-    if (mounted) {
-      setState(() {
-        _isLoading = false;
-      });
+    try {
+      _itemService = await ItemService.create();
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _errorMessage = null;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _errorMessage = '初期化に失敗しました: ${e.toString()}';
+        });
+      }
     }
   }
 
@@ -110,6 +121,37 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
+          : _errorMessage != null
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.error_outline,
+                        size: 64,
+                        color: Colors.red,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        _errorMessage!,
+                        style: const TextStyle(fontSize: 18, color: Colors.red),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 16),
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          setState(() {
+                            _isLoading = true;
+                            _errorMessage = null;
+                          });
+                          _initializeItemService();
+                        },
+                        icon: const Icon(Icons.refresh),
+                        label: const Text('再試行'),
+                      ),
+                    ],
+                  ),
+                )
           : _itemService.items.isEmpty
               ? Center(
                   child: Column(
@@ -137,6 +179,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       item: item,
                       onDecrement: () async {
                         if (!mounted) return;
+                        final messenger = ScaffoldMessenger.of(context);
                         try {
                           await _itemService.decrementItem(item.id);
                           if (mounted) {
@@ -144,7 +187,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           }
                         } catch (e) {
                           if (mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
+                            messenger.showSnackBar(
                               SnackBar(
                                 content: Text('エラーが発生しました: ${e.toString()}'),
                                 backgroundColor: Colors.red,
@@ -155,6 +198,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       },
                       onIncrement: () async {
                         if (!mounted) return;
+                        final messenger = ScaffoldMessenger.of(context);
                         try {
                           await _itemService.incrementItem(item.id);
                           if (mounted) {
@@ -162,7 +206,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           }
                         } catch (e) {
                           if (mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
+                            messenger.showSnackBar(
                               SnackBar(
                                 content: Text('エラーが発生しました: ${e.toString()}'),
                                 backgroundColor: Colors.red,
