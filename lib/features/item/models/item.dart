@@ -110,5 +110,9 @@ class Item {
 
   @override
   int get hashCode => id.hashCode ^ name.hashCode ^ count.hashCode;
-}
 
+  @override
+  String toString() {
+    return 'Item(id: $id, name: $name, count: $count, createdAt: $createdAt, updatedAt: $updatedAt)';
+  }
+}

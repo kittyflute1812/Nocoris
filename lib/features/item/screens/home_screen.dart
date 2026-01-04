@@ -255,4 +255,3 @@ class _DeleteConfirmationDialog extends StatelessWidget {
     );
   }
 }
-

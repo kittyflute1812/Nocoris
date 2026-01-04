@@ -105,4 +105,3 @@ class ItemService {
     await _storage.saveItems(itemsJson);
   }
 }
-
