@@ -89,7 +89,7 @@ class Item {
     required int initialCount,
   }) {
     final now = DateTime.now();
-    const uuid = Uuid();
+    final uuid = Uuid();
     return Item(
       id: uuid.v4(),
       name: name,
