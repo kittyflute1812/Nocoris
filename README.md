@@ -206,7 +206,7 @@ await tester.pumpWidget(
 
 1. **リポジトリのクローン**
 ```bash
-git clone https://github.com/tomomi-hirano/Nocoris.git
+git clone https://github.com/kittyflute1812/Nocoris.git
 cd Nocoris
 ```
 
