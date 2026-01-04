@@ -534,7 +534,7 @@ iOSのホーム画面やロック画面に配置できるネイティブウィ�
 
 ```
 現在のアーキテクチャ:
-drop_counter/
+Nocoris/
 ├── lib/                         # Flutter アプリ
 │   ├── models/
 │   ├── services/
@@ -544,7 +544,7 @@ drop_counter/
     └── Runner/
 
 ウィジェット追加後:
-drop_counter/
+Nocoris/
 ├── lib/                         # Flutter アプリ
 │   ├── models/
 │   ├── services/
@@ -569,7 +569,7 @@ App Groups によるデータ共有:
 │              shared_preferences             │
 │                      ↓                      │
 │         App Groups Container                │
-│    (group.com.example.drop_counter)         │
+│    (group.com.example.nocoris)              │
 └─────────────────┬───────────────────────────┘
                   │ (共有データ)
 ┌─────────────────▼───────────────────────────┐
@@ -587,13 +587,13 @@ App Groups によるデータ共有:
 **1. App Groups の設定**
 - Xcode で App Groups Capability を有効化
 - メインアプリとWidget Extensionで同じグループIDを使用
-- 例: `group.com.example.drop_counter`
+- 例: `group.com.example.nocoris`
 
 **2. データ共有の実装**
 ```dart
 // Flutter側（app_group_storage_service.dart）
 class AppGroupStorageService {
-  static const String appGroupId = 'group.com.example.drop_counter';
+  static const String appGroupId = 'group.com.example.nocoris';
   
   // App Groups対応のshared_preferencesを使用
   // または、MethodChannelでSwift側のUserDefaultsにアクセス
@@ -606,7 +606,7 @@ class AppGroupStorageService {
 struct Provider: TimelineProvider {
     func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
         // App Groupsからデータを読み込み
-        let userDefaults = UserDefaults(suiteName: "group.com.example.drop_counter")
+        let userDefaults = UserDefaults(suiteName: "group.com.example.nocoris")
         let itemsData = userDefaults?.data(forKey: "items")
         
         // タイムラインエントリを作成

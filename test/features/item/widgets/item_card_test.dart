@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:drop_counter/features/item/widgets/item_card.dart';
-import 'package:drop_counter/features/item/models/item.dart';
+import 'package:nocoris/features/item/widgets/item_card.dart';
+import 'package:nocoris/features/item/models/item.dart';
 
 void main() {
   group('ItemCard Widget Tests', () {

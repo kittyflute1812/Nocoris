@@ -34,7 +34,7 @@ iPhoneユーザー向けの残数管理アプリケーション「Nocoris（ノ�
 ## 📂 プロジェクト構成
 
 ```
-drop_counter/
+Nocoris/
 ├── lib/
 │   ├── main.dart                    # アプリケーションのエントリーポイント
 │   ├── models/
@@ -113,8 +113,8 @@ drop_counter/
 
 1. **リポジトリのクローン**
 ```bash
-git clone https://github.com/tomomi-hirano/drop_counter.git
-cd drop_counter
+git clone https://github.com/tomomi-hirano/Nocoris.git
+cd Nocoris
 ```
 
 2. **依存パッケージのインストール**
