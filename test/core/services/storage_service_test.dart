@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:drop_counter/services/storage_service.dart';
+import 'package:drop_counter/core/services/storage_service.dart';
 
 void main() {
   group('StorageService Tests', () {
@@ -15,10 +15,10 @@ void main() {
     test('saveJson()とloadJson()が正しく動作すること', () async {
       const testKey = 'test_key';
       final testData = {'name': 'Test', 'value': 42};
-      
+
       await storageService.saveJson(testKey, testData);
       final loadedData = storageService.loadJson(testKey);
-      
+
       expect(loadedData, testData);
     });
 
@@ -33,10 +33,10 @@ void main() {
         {'id': '1', 'name': 'Item 1'},
         {'id': '2', 'name': 'Item 2'},
       ];
-      
+
       await storageService.saveJsonList(testKey, testList);
       final loadedList = storageService.loadJsonList(testKey);
-      
+
       expect(loadedList, testList);
     });
 
@@ -50,10 +50,10 @@ void main() {
         {'id': '1', 'name': 'Item 1', 'count': 1},
         {'id': '2', 'name': 'Item 2', 'count': 2},
       ];
-      
+
       await storageService.saveItems(testItems);
       final loadedItems = storageService.loadItems();
-      
+
       expect(loadedItems, testItems);
     });
 
@@ -63,3 +63,4 @@ void main() {
     });
   });
 }
+

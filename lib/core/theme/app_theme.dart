@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import '../constants/app_constants.dart';
 
 /// アプリケーション全体のテーマを定義
 class AppTheme {
-  static const _primaryColor = Color(0xFF2196F3);  // Blue
-  static const _accentColor = Color(0xFF03A9F4);   // Light Blue
-  static const _errorColor = Color(0xFFE53935);    // Red
+  AppTheme._();
+
+  // カラー定数
+  static const _primaryColor = Color(0xFF2196F3); // Blue
+  static const _accentColor = Color(0xFF03A9F4); // Light Blue
+  static const _errorColor = Color(0xFFE53935); // Red
 
   /// ライトモードのテーマ
   static ThemeData get light => ThemeData(
@@ -21,53 +25,54 @@ class AppTheme {
           elevation: 0,
         ),
         cardTheme: CardThemeData(
-          elevation: 2,
+          elevation: AppConstants.cardElevation,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppConstants.cardBorderRadius),
           ),
           margin: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 8,
+            horizontal: AppConstants.defaultPadding,
+            vertical: AppConstants.defaultSpacing,
           ),
         ),
         inputDecorationTheme: InputDecorationTheme(
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppConstants.cardBorderRadius),
           ),
           filled: true,
           contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 12,
+            horizontal: AppConstants.defaultPadding,
+            vertical: AppConstants.defaultSpacing * 1.5,
           ),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
             padding: const EdgeInsets.symmetric(
-              horizontal: 24,
-              vertical: 12,
+              horizontal: AppConstants.defaultPadding * 1.5,
+              vertical: AppConstants.defaultSpacing * 1.5,
             ),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius:
+                  BorderRadius.circular(AppConstants.cardBorderRadius),
             ),
           ),
         ),
         textButtonTheme: TextButtonThemeData(
           style: TextButton.styleFrom(
             padding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 8,
+              horizontal: AppConstants.defaultPadding,
+              vertical: AppConstants.defaultSpacing,
             ),
           ),
         ),
         iconButtonTheme: IconButtonThemeData(
           style: IconButton.styleFrom(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(AppConstants.defaultSpacing * 1.5),
           ),
         ),
         snackBarTheme: SnackBarThemeData(
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(AppConstants.defaultSpacing),
           ),
         ),
         dividerTheme: const DividerThemeData(
@@ -90,53 +95,54 @@ class AppTheme {
           elevation: 0,
         ),
         cardTheme: CardThemeData(
-          elevation: 2,
+          elevation: AppConstants.cardElevation,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppConstants.cardBorderRadius),
           ),
           margin: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 8,
+            horizontal: AppConstants.defaultPadding,
+            vertical: AppConstants.defaultSpacing,
           ),
         ),
         inputDecorationTheme: InputDecorationTheme(
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppConstants.cardBorderRadius),
           ),
           filled: true,
           contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 12,
+            horizontal: AppConstants.defaultPadding,
+            vertical: AppConstants.defaultSpacing * 1.5,
           ),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
             padding: const EdgeInsets.symmetric(
-              horizontal: 24,
-              vertical: 12,
+              horizontal: AppConstants.defaultPadding * 1.5,
+              vertical: AppConstants.defaultSpacing * 1.5,
             ),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius:
+                  BorderRadius.circular(AppConstants.cardBorderRadius),
             ),
           ),
         ),
         textButtonTheme: TextButtonThemeData(
           style: TextButton.styleFrom(
             padding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 8,
+              horizontal: AppConstants.defaultPadding,
+              vertical: AppConstants.defaultSpacing,
             ),
           ),
         ),
         iconButtonTheme: IconButtonThemeData(
           style: IconButton.styleFrom(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(AppConstants.defaultSpacing * 1.5),
           ),
         ),
         snackBarTheme: SnackBarThemeData(
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(AppConstants.defaultSpacing),
           ),
         ),
         dividerTheme: const DividerThemeData(
@@ -145,3 +151,4 @@ class AppTheme {
         ),
       );
 }
+
