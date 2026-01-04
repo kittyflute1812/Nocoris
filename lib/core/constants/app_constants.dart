@@ -3,7 +3,7 @@ class AppConstants {
   AppConstants._();
 
   // アプリケーション名
-  static const String appName = 'CountDrop';
+  static const String appName = 'Nocoris';
 
   // ストレージキー
   static const String itemsStorageKey = 'items';
