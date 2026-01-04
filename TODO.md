@@ -317,13 +317,23 @@ iPhoneユーザー向けの残数管理アプリケーション「Nocoris（ノ�
 ## 📝 開発メモ
 
 ### 最近の変更
+- 2026-01-04: **Riverpod による状態管理の導入完了** ✅
+  - `flutter_riverpod` パッケージの導入
+  - `ItemService` を `ChangeNotifier` として実装
+  - `itemServiceProvider` と `itemServiceInitProvider` の作成
+  - `HomeScreen` と `ItemFormScreen` を `ConsumerWidget` に変更
+  - 全テストをRiverpod対応に更新（40テスト全て成功）
+  - 依存性注入の実装完了
+- 2026-01-04: drop_counter → Nocoris への移行完了
+  - パッケージ名、バンドル識別子、テストファイルを全て更新
+  - iOS/Android/macOS の設定ファイルを修正
+  - 43箇所の修正を完了
 - 2026-01-04: .cursorrulesに基づくリファクタリング完了
   - 機能ベースのディレクトリ構造に再構成
   - 共通ウィジェット（ErrorView, LoadingView, EmptyStateView）の作成
   - 定数の集約（AppConstants, AppStrings）
   - 巨大なウィジェットの分解
   - Itemモデルの不変化（copyWithメソッド追加）
-  - すべてのテスト（41個）が正常にパス
 - 2026-01-04: CardTheme → CardThemeData に修正（CI エラー解消）
 - 2026-01-04: `use_build_context_synchronously` 警告を解消
 - 2026-01-04: `updateItem()` の戻り値チェックを実装
@@ -331,7 +341,7 @@ iPhoneユーザー向けの残数管理アプリケーション「Nocoris（ノ�
 - 2026-01-04: 不要なプラットフォームディレクトリを削除（web, windows, linux）
 
 ### 技術的負債
-- 状態管理: 現在はsetStateベース。アプリが複雑化する前にProvider/Riverpodの導入を推奨
+- ~~状態管理: 現在はsetStateベース。アプリが複雑化する前にProvider/Riverpodの導入を推奨~~ ✅ **完了（Riverpod導入済み）**
 - ナビゲーション: MaterialPageRouteを使用。型安全なgo_routerへの移行を検討
 - テストカバレッジ: 単体テストとウィジェットテストは充実。統合テストとE2Eテストの追加を推奨
 

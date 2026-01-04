@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
 import '../models/item.dart';
 import '../../../core/services/storage_service.dart';
@@ -5,10 +6,12 @@ import '../../../core/services/storage_service.dart';
 /// アイテムのビジネスロジックを管理するサービス
 /// 
 /// アイテムの作成、更新、削除、カウント操作を提供します。
-class ItemService {
+/// ChangeNotifierを継承し、状態変更時にリスナーに通知します。
+class ItemService extends ChangeNotifier {
   final Logger _logger = Logger();
   final StorageService _storage;
   List<Item> _items = [];
+  final bool _isLoading = false;
 
   ItemService(this._storage) {
     _loadItems();
@@ -22,6 +25,9 @@ class ItemService {
 
   /// アイテムリストの不変コピーを取得
   List<Item> get items => List.unmodifiable(_items);
+
+  /// ローディング状態を取得
+  bool get isLoading => _isLoading;
 
   /// IDでアイテムを検索
   Item? getItemById(String id) {
@@ -37,6 +43,7 @@ class ItemService {
     final item = Item.create(name: name, initialCount: initialCount);
     _items.add(item);
     await _saveItems();
+    notifyListeners();
     return item;
   }
 
@@ -47,6 +54,7 @@ class ItemService {
 
     _items[index] = _items[index].setCount(count);
     await _saveItems();
+    notifyListeners();
     return true;
   }
 
@@ -56,6 +64,7 @@ class ItemService {
     _items.removeWhere((item) => item.id == id);
     if (_items.length != initialLength) {
       await _saveItems();
+      notifyListeners();
       return true;
     }
     return false;
@@ -68,6 +77,7 @@ class ItemService {
 
     _items[index] = _items[index].decrement();
     await _saveItems();
+    notifyListeners();
     return true;
   }
 
@@ -78,6 +88,7 @@ class ItemService {
 
     _items[index] = _items[index].increment();
     await _saveItems();
+    notifyListeners();
     return true;
   }
 
