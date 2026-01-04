@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:drop_counter/models/item.dart';
-import 'package:drop_counter/screens/item_form_screen.dart';
-import '../helpers/test_helpers.dart';
+import 'package:drop_counter/features/item/models/item.dart';
+import 'package:drop_counter/features/item/screens/item_form_screen.dart';
+import '../../../helpers/test_helpers.dart';
 
 void main() {
   group('ItemFormScreen', () {
@@ -129,3 +129,4 @@ void main() {
     });
   });
 }
+

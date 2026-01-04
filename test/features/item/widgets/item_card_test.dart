@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:drop_counter/widgets/item_card.dart';
-import 'package:drop_counter/models/item.dart';
+import 'package:drop_counter/features/item/widgets/item_card.dart';
+import 'package:drop_counter/features/item/models/item.dart';
 
 void main() {
   group('ItemCard Widget Tests', () {
     late Item testItem;
-    
+
     setUp(() {
       testItem = Item(
         id: '1',
@@ -38,7 +38,8 @@ void main() {
       expect(find.byIcon(Icons.add), findsOneWidget);
     });
 
-    testWidgets('count=0の時にdecrementボタンが無効化されること', (WidgetTester tester) async {
+    testWidgets('count=0の時にdecrementボタンが無効化されること',
+        (WidgetTester tester) async {
       testItem = Item(
         id: '1',
         name: 'Test Item',
@@ -67,7 +68,8 @@ void main() {
       expect(decrementButton.onPressed, null);
     });
 
-    testWidgets('減算・加算ボタンのコールバックが正しく呼ばれること', (WidgetTester tester) async {
+    testWidgets('減算・加算ボタンのコールバックが正しく呼ばれること',
+        (WidgetTester tester) async {
       bool decrementCalled = false;
       bool incrementCalled = false;
 
@@ -96,7 +98,8 @@ void main() {
       expect(incrementCalled, true);
     });
 
-    testWidgets('メニューボタンのコールバックが正しく呼ばれること', (WidgetTester tester) async {
+    testWidgets('メニューボタンのコールバックが正しく呼ばれること',
+        (WidgetTester tester) async {
       bool editCalled = false;
       bool deleteCalled = false;
 
@@ -134,3 +137,4 @@ void main() {
     });
   });
 }
+

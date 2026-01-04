@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:drop_counter/screens/home_screen.dart';
-import '../helpers/test_helpers.dart';
+import 'package:drop_counter/features/item/screens/home_screen.dart';
+import '../../../helpers/test_helpers.dart';
 
 void main() {
   group('HomeScreen', () {
@@ -86,12 +86,13 @@ void main() {
 
       // 追加ボタンをタップ
       await tester.tap(find.byType(FloatingActionButton));
-      
+
       // 遷移アニメーションの完了を待つ
       await tester.pumpAndSettle();
     });
 
-    testWidgets('外部から渡されたItemServiceを使用する場合、読み込み中の表示は表示されない', (tester) async {
+    testWidgets('外部から渡されたItemServiceを使用する場合、読み込み中の表示は表示されない',
+        (tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: HomeScreen(
@@ -110,3 +111,4 @@ void main() {
     });
   });
 }
+
