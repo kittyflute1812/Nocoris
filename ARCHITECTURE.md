@@ -1,19 +1,26 @@
-# CountDrop - システムアーキテクチャドキュメント
+# Nocoris - システムアーキテクチャドキュメント
 
 ## 📐 アーキテクチャ概要
 
-CountDropは、クリーンアーキテクチャの原則に基づいた3層構造を採用しています。
+Nocorisは、クリーンアーキテクチャの原則に基づいた4層構造を採用しています。
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                    Presentation Layer                       │
 │                  (UI & User Interaction)                    │
+│              ConsumerWidget / ConsumerStatefulWidget        │
+├─────────────────────────────────────────────────────────────┤
+│                  State Management Layer                     │
+│                    (Riverpod Providers)                     │
+│           ChangeNotifierProvider / FutureProvider           │
 ├─────────────────────────────────────────────────────────────┤
 │                  Business Logic Layer                       │
 │              (Services & Domain Logic)                      │
+│                  ChangeNotifier Services                    │
 ├─────────────────────────────────────────────────────────────┤
 │                      Data Layer                             │
 │              (Models & Data Persistence)                    │
+│                  Immutable Data Models                      │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -26,15 +33,20 @@ CountDropは、クリーンアーキテクチャの原則に基づいた3層構�
 ユーザーインターフェースとユーザーインタラクションを担当します。
 
 ```
-lib/screens/
-├── home_screen.dart          # メイン画面
-└── item_form_screen.dart     # アイテム作成/編集画面
+lib/features/item/
+├── screens/
+│   ├── home_screen.dart          # メイン画面 (ConsumerStatefulWidget)
+│   └── item_form_screen.dart     # アイテム作成/編集画面 (ConsumerStatefulWidget)
+└── widgets/
+    └── item_card.dart            # アイテム表示カード
 
-lib/widgets/
-└── item_card.dart            # アイテム表示カード
-
-lib/theme/
-└── app_theme.dart            # テーマ定義
+lib/core/
+├── theme/
+│   └── app_theme.dart            # テーマ定義
+└── widgets/                      # 共通ウィジェット
+    ├── empty_state_view.dart
+    ├── error_view.dart
+    └── loading_view.dart
 ```
 
 #### HomeScreen（メイン画面）
@@ -46,19 +58,26 @@ lib/theme/
 - エラー表示とユーザーフィードバック
 
 **状態管理**:
-- `StatefulWidget` を使用
-- `ItemService` からアイテムリストを取得
-- `setState()` でUI更新
+- `ConsumerStatefulWidget` を使用（Riverpod）
+- `ref.watch(itemServiceInitProvider)` でItemServiceを取得
+- `ref.read(itemServiceProvider)` で操作を実行
+- ItemServiceの `notifyListeners()` により自動的にUI更新
 
 **データフロー**:
 ```
-HomeScreen
+HomeScreen (ConsumerStatefulWidget)
     ↓ (初期化時)
-ItemService.create()
-    ↓ (アイテム取得)
-ItemService.items
+ref.watch(itemServiceInitProvider)
+    ↓
+ItemService.create() (非同期初期化)
+    ↓
+AsyncValue<ItemService> (loading/data/error)
+    ↓ (データ取得)
+ItemService.items (ChangeNotifier)
     ↓ (表示)
 ListView.builder → ItemCard
+    ↓ (状態変更時)
+notifyListeners() → 自動的にUI再描画
 ```
 
 #### ItemFormScreen（作成/編集画面）
@@ -74,13 +93,15 @@ ListView.builder → ItemCard
 
 **データフロー**:
 ```
-ItemFormScreen
+ItemFormScreen (ConsumerStatefulWidget)
     ↓ (保存ボタン押下)
-ItemService.createItem() / updateItem()
+ref.read(itemServiceProvider).createItem() / updateItem()
+    ↓
+ItemService.notifyListeners()
     ↓ (成功時)
 Navigator.pop(true)
     ↓
-HomeScreen.setState() (リスト更新)
+HomeScreen (自動的にUI更新、setStateは不要)
 ```
 
 #### ItemCard（アイテムカード）
@@ -98,13 +119,127 @@ HomeScreen.setState() (リスト更新)
 
 ---
 
-### 2. Business Logic Layer（ビジネスロジック層）
+### 2. State Management Layer（状態管理層）
+
+Riverpodを使用した状態管理を担当します。
+
+```
+lib/features/item/providers/
+└── item_provider.dart        # Providerの定義
+```
+
+#### Riverpod Providers
+
+**itemServiceProvider（ChangeNotifierProvider）**
+
+```dart
+final itemServiceProvider = ChangeNotifierProvider<ItemService>((ref) {
+  throw UnimplementedError('itemServiceProvider must be overridden');
+});
+```
+
+**責務**:
+- ItemServiceのインスタンスを提供
+- ChangeNotifierとして状態変更を監視
+- テスト時にモックサービスをオーバーライド可能
+
+**itemServiceInitProvider（FutureProvider）**
+
+```dart
+final itemServiceInitProvider = FutureProvider<ItemService>((ref) async {
+  return await ItemService.create();
+});
+```
+
+**責務**:
+- ItemServiceの非同期初期化を管理
+- StorageServiceの初期化とデータ読み込みを実行
+- AsyncValue（loading/data/error）で状態を提供
+
+#### 状態管理パターン
+
+**ChangeNotifier + Riverpod パターン**
+
+```dart
+// 1. Serviceが状態を保持し、変更時にnotifyListeners()を呼び出す
+class ItemService extends ChangeNotifier {
+  final List<Item> _items = [];
+  
+  Future<Item> createItem(String name, int count) async {
+    final item = Item.create(name: name, initialCount: count);
+    _items.add(item);
+    await _saveItems();
+    notifyListeners(); // ← UIに変更を通知
+    return item;
+  }
+}
+
+// 2. UIはref.watchで状態を監視し、変更時に自動再描画
+class _HomeScreenState extends ConsumerState<HomeScreen> {
+  @override
+  Widget build(BuildContext context) {
+    final itemServiceAsync = ref.watch(itemServiceInitProvider);
+    // itemServiceAsyncが変更されると自動的に再描画
+    
+    return itemServiceAsync.when(
+      loading: () => LoadingView(),
+      error: (err, stack) => ErrorView(message: err.toString()),
+      data: (itemService) {
+        final items = itemService.items;
+        // itemService.notifyListeners()が呼ばれると自動的に再描画
+        return ListView.builder(...);
+      },
+    );
+  }
+}
+```
+
+#### 依存性注入
+
+**本番環境**:
+```dart
+// main.dart
+void main() {
+  runApp(
+    const ProviderScope(
+      child: MyApp(),
+    ),
+  );
+}
+```
+
+**テスト環境**:
+```dart
+// テスト時にモックサービスを注入
+await tester.pumpWidget(
+  ProviderScope(
+    overrides: [
+      itemServiceInitProvider.overrideWith((ref) async => mockItemService),
+      itemServiceProvider.overrideWith((ref) => mockItemService),
+    ],
+    child: const MaterialApp(home: HomeScreen()),
+  ),
+);
+```
+
+**メリット**:
+- テストが容易（モックの注入が簡単）
+- 状態の一元管理
+- 自動的なUI更新（setStateが不要）
+- コンパイル時の型安全性
+- グローバル状態の最小化
+
+---
+
+### 3. Business Logic Layer（ビジネスロジック層）
 
 アプリケーションのコアロジックを担当します。
 
 ```
-lib/services/
-├── item_service.dart         # アイテム管理サービス
+lib/features/item/services/
+└── item_service.dart         # アイテム管理サービス
+
+lib/core/services/
 └── storage_service.dart      # ストレージ抽象化サービス
 ```
 
@@ -115,35 +250,62 @@ lib/services/
 - カウント操作（increment/decrement）
 - データの整合性維持
 - ストレージへの永続化
+- **状態変更の通知（ChangeNotifier）**
+
+**クラス定義**:
+```dart
+class ItemService extends ChangeNotifier {
+  final StorageService _storageService;
+  final List<Item> _items = [];
+  
+  // コンストラクタはプライベート
+  ItemService._(this._storageService);
+  
+  // ファクトリメソッドで非同期初期化
+  static Future<ItemService> create() async {
+    final storageService = await StorageService.create();
+    final service = ItemService._(storageService);
+    await service._loadItems();
+    return service;
+  }
+}
+```
 
 **主要メソッド**:
 
-| メソッド | 説明 | 戻り値 |
-|---------|------|--------|
-| `create()` | StorageServiceを初期化してItemServiceを作成 | `Future<ItemService>` |
-| `items` | 全アイテムのリストを取得（読み取り専用） | `List<Item>` |
-| `getItemById(id)` | IDでアイテムを検索 | `Item?` |
-| `createItem(name, count)` | 新しいアイテムを作成 | `Future<Item>` |
-| `updateItem(id, count)` | アイテムのカウントを更新 | `Future<bool>` |
-| `deleteItem(id)` | アイテムを削除 | `Future<bool>` |
-| `incrementItem(id)` | カウントを1増やす | `Future<bool>` |
-| `decrementItem(id)` | カウントを1減らす | `Future<bool>` |
+| メソッド | 説明 | 戻り値 | 通知 |
+|---------|------|--------|------|
+| `create()` | StorageServiceを初期化してItemServiceを作成 | `Future<ItemService>` | - |
+| `items` | 全アイテムのリストを取得（読み取り専用） | `List<Item>` | - |
+| `getItemById(id)` | IDでアイテムを検索 | `Item?` | - |
+| `createItem(name, count)` | 新しいアイテムを作成 | `Future<Item>` | ✅ |
+| `updateItem(id, count)` | アイテムのカウントを更新 | `Future<bool>` | ✅ |
+| `deleteItem(id)` | アイテムを削除 | `Future<bool>` | ✅ |
+| `incrementItem(id)` | カウントを1増やす | `Future<bool>` | ✅ |
+| `decrementItem(id)` | カウントを1減らす | `Future<bool>` | ✅ |
 
 **データフロー**:
 ```
-ItemService
+ItemService (ChangeNotifier)
     ↓ (初期化時)
 _loadItems() → StorageService.loadItems()
     ↓ (変更時)
+_items.add(item) / _items.remove(item)
+    ↓
 _saveItems() → StorageService.saveItems()
     ↓
+notifyListeners() ← UIに変更を通知
+    ↓
 shared_preferences (永続化)
+    ↓
+ref.watch(itemServiceInitProvider) が監視しているUIが自動再描画
 ```
 
 **エラーハンドリング**:
 - すべての非同期操作で例外をキャッチ
 - ログ出力（Logger使用）
 - 操作の成功/失敗を `bool` で返却
+- エラー時も `notifyListeners()` を呼び出さない（状態の一貫性を保つ）
 
 #### StorageService（ストレージサービス）
 
@@ -165,42 +327,88 @@ shared_preferences (永続化)
 
 ---
 
-### 3. Data Layer（データ層）
+### 4. Data Layer（データ層）
 
 データモデルとデータ構造を定義します。
 
 ```
-lib/models/
-└── item.dart                 # アイテムデータモデル
+lib/features/item/models/
+└── item.dart                 # アイテムデータモデル（不変）
 ```
 
 #### Item（アイテムモデル）
 
+**設計原則**: **不変データモデル（Immutable）**
+
+```dart
+class Item {
+  final String id;
+  final String name;
+  final int count;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  
+  // すべてのフィールドがfinal
+  const Item({
+    required this.id,
+    required this.name,
+    required this.count,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+  
+  // 変更時は新しいインスタンスを返す
+  Item copyWith({
+    String? name,
+    int? count,
+    DateTime? updatedAt,
+  }) {
+    return Item(
+      id: id,
+      name: name ?? this.name,
+      count: count ?? this.count,
+      createdAt: createdAt,
+      updatedAt: updatedAt ?? DateTime.now(),
+    );
+  }
+}
+```
+
 **プロパティ**:
 
-| プロパティ | 型 | 説明 |
-|-----------|-----|------|
-| `id` | `String` | ユニークID（UUID v4） |
-| `name` | `String` | アイテム名 |
-| `count` | `int` | 現在のカウント数 |
-| `createdAt` | `DateTime` | 作成日時 |
-| `updatedAt` | `DateTime` | 最終更新日時 |
+| プロパティ | 型 | 説明 | 変更可能 |
+|-----------|-----|------|---------|
+| `id` | `String` | ユニークID（UUID v4） | ❌ |
+| `name` | `String` | アイテム名 | ❌ |
+| `count` | `int` | 現在のカウント数 | ❌ |
+| `createdAt` | `DateTime` | 作成日時 | ❌ |
+| `updatedAt` | `DateTime` | 最終更新日時 | ❌ |
 
 **メソッド**:
 
-| メソッド | 説明 |
-|---------|------|
-| `decrement()` | カウントを1減らす（0未満にはならない） |
-| `increment()` | カウントを1増やす |
-| `setCount(newCount)` | カウントを直接設定（0以上） |
-| `fromJson(json)` | JSONからItemオブジェクトを生成 |
-| `toJson()` | ItemオブジェクトをJSONに変換 |
-| `create(name, count)` | 新しいItemを作成（ファクトリメソッド） |
+| メソッド | 説明 | 戻り値 |
+|---------|------|--------|
+| `copyWith({...})` | 指定したフィールドを変更した新しいインスタンスを返す | `Item` |
+| `decrement()` | カウントを1減らした新しいインスタンスを返す | `Item` |
+| `increment()` | カウントを1増やした新しいインスタンスを返す | `Item` |
+| `setCount(newCount)` | カウントを直接設定した新しいインスタンスを返す | `Item` |
+| `fromJson(json)` | JSONからItemオブジェクトを生成 | `Item` |
+| `toJson()` | ItemオブジェクトをJSONに変換 | `Map<String, dynamic>` |
+| `create(name, count)` | 新しいItemを作成（ファクトリメソッド） | `Item` |
 
 **ビジネスルール**:
 - カウントは常に0以上
 - 更新時に `updatedAt` を自動更新
 - IDはUUID v4で自動生成
+- **すべてのフィールドが不変（final）**
+- **変更時は新しいインスタンスを生成（copyWith）**
+
+**不変性のメリット**:
+- 予期しない状態変更を防止
+- テストが容易
+- デバッグが簡単（状態の履歴を追跡可能）
+- 並行処理での安全性
+- Riverpodとの相性が良い
 
 ---
 
@@ -355,18 +563,38 @@ test('increment() はカウントを1増やす', () {
 - UI コンポーネントの描画を確認
 - ユーザーインタラクションをシミュレート
 - 状態変化を検証
+- **Riverpodの依存性注入を活用**
 
 **例**: `home_screen_test.dart`
 ```dart
 testWidgets('アイテムが正しく表示される', (tester) async {
-  await tester.pumpWidget(MaterialApp(
-    home: HomeScreen(itemService: mockItemService),
-  ));
-  await tester.pumpAndSettle();
+  final mockItemService = TestHelpers.createMockItemService(
+    initialItems: [
+      {'id': '1', 'name': 'テストアイテム1', 'count': 5, ...},
+    ],
+  );
   
+  // ProviderScopeでラップし、モックサービスを注入
+  await tester.pumpWidget(
+    ProviderScope(
+      overrides: [
+        itemServiceInitProvider.overrideWith((ref) async => mockItemService),
+        itemServiceProvider.overrideWith((ref) => mockItemService),
+      ],
+      child: const MaterialApp(home: HomeScreen()),
+    ),
+  );
+  
+  await tester.pumpAndSettle();
   expect(find.text('テストアイテム1'), findsOneWidget);
 });
 ```
+
+**Riverpodテストのポイント**:
+- `ProviderScope` でウィジェットをラップ
+- `overrides` でモックサービスを注入
+- 本番コードを変更せずにテスト可能
+- 複数のProviderを同時にオーバーライド可能
 
 #### モックの使用
 
@@ -380,11 +608,50 @@ testWidgets('アイテムが正しく表示される', (tester) async {
 ```dart
 class MockStorageService extends Mock implements StorageService {}
 
-ItemService createMockItemService({List<Map<String, dynamic>>? initialItems}) {
-  final mockStorage = MockStorageService();
-  when(() => mockStorage.loadItems()).thenReturn(initialItems ?? []);
-  return ItemService(mockStorage);
+class TestHelpers {
+  static ItemService createMockItemService({
+    List<Map<String, dynamic>>? initialItems,
+  }) {
+    final mockStorage = MockStorageService();
+    
+    // StorageServiceのモック動作を定義
+    when(() => mockStorage.loadItems()).thenReturn(initialItems ?? []);
+    when(() => mockStorage.saveItems(any())).thenAnswer((_) async => true);
+    
+    // ItemServiceを同期的に作成（テスト用）
+    final service = ItemService._(mockStorage);
+    
+    // 初期データを読み込み
+    if (initialItems != null && initialItems.isNotEmpty) {
+      for (final json in initialItems) {
+        service._items.add(Item.fromJson(json));
+      }
+    }
+    
+    return service;
+  }
 }
+```
+
+**Riverpod + Mocktailの組み合わせ**:
+```dart
+// 1. mocktailでモックサービスを作成
+final mockItemService = TestHelpers.createMockItemService(
+  initialItems: testItems,
+);
+
+// 2. Riverpodでモックを注入
+await tester.pumpWidget(
+  ProviderScope(
+    overrides: [
+      itemServiceProvider.overrideWith((ref) => mockItemService),
+    ],
+    child: const MaterialApp(home: HomeScreen()),
+  ),
+);
+
+// 3. モックの動作を検証
+verify(() => mockItemService.incrementItem(any())).called(1);
 ```
 
 ---
@@ -500,29 +767,128 @@ void setCount(int newCount) {
 ```
 main.dart
   ↓
+ProviderScope (Riverpod)
+  ↓
 MyApp
   ↓
-HomeScreen
-  ├→ ItemService
+HomeScreen (ConsumerStatefulWidget)
+  ├→ ref.watch(itemServiceInitProvider)
+  │   ↓
+  │   itemServiceInitProvider (FutureProvider)
+  │   ↓
+  │   ItemService.create()
   │   ├→ StorageService
   │   │   └→ shared_preferences
   │   └→ Item (Model)
   │       └→ uuid
-  └→ ItemFormScreen
-      └→ ItemService (同上)
+  │
+  ├→ ref.read(itemServiceProvider)
+  │   ↓
+  │   itemServiceProvider (ChangeNotifierProvider)
+  │   ↓
+  │   ItemService (ChangeNotifier)
+  │   └→ notifyListeners() → UI自動更新
+  │
+  └→ ItemFormScreen (ConsumerStatefulWidget)
+      └→ ref.read(itemServiceProvider) (同上)
 
 ItemCard (Widget)
   ← HomeScreen から使用
+  └→ コールバックでItemServiceのメソッドを呼び出し
+```
+
+### 状態の流れ
+
+```
+ユーザー操作
+  ↓
+UI (ConsumerWidget)
+  ↓
+ref.read(itemServiceProvider).incrementItem()
+  ↓
+ItemService (ChangeNotifier)
+  ├→ _items.add/remove/update
+  ├→ _saveItems() → StorageService
+  └→ notifyListeners()
+      ↓
+Riverpod が検知
+  ↓
+ref.watch(itemServiceInitProvider) を使用しているWidget
+  ↓
+自動的に再描画（setState不要）
 ```
 
 ### 外部パッケージ依存
 
-| パッケージ | バージョン | 用途 |
-|-----------|-----------|------|
-| `shared_preferences` | 2.5.3 | ローカルストレージ |
-| `uuid` | 4.3.3 | ユニークID生成 |
-| `logger` | 2.3.0 | ロギング |
-| `mocktail` | 1.0.3 | テスト用モック |
+| パッケージ | バージョン | 用途 | レイヤー |
+|-----------|-----------|------|---------|
+| `flutter_riverpod` | 2.6.1 | 状態管理 | State Management |
+| `shared_preferences` | 2.5.3 | ローカルストレージ | Data |
+| `uuid` | 4.3.3 | ユニークID生成 | Data |
+| `logger` | 2.3.0 | ロギング | Business Logic |
+| `mocktail` | 1.0.3 | テスト用モック | Test |
+
+---
+
+## 🎯 アーキテクチャの利点
+
+### 1. テスト容易性
+
+**Riverpodによる依存性注入**:
+```dart
+// テスト時にモックを簡単に注入
+testWidgets('アイテムが正しく表示される', (tester) async {
+  final mockItemService = TestHelpers.createMockItemService(
+    initialItems: testItems,
+  );
+  
+  await tester.pumpWidget(
+    ProviderScope(
+      overrides: [
+        itemServiceProvider.overrideWith((ref) => mockItemService),
+      ],
+      child: const MaterialApp(home: HomeScreen()),
+    ),
+  );
+  
+  expect(find.text('テストアイテム'), findsOneWidget);
+});
+```
+
+### 2. 保守性
+
+**機能ベースのディレクトリ構造**:
+- 関連するコードが同じディレクトリにまとまっている
+- 機能の追加・削除が容易
+- コードの検索が簡単
+
+**不変データモデル**:
+- 予期しない状態変更を防止
+- デバッグが容易
+- 並行処理での安全性
+
+### 3. スケーラビリティ
+
+**状態管理の一元化**:
+- 新しい機能を追加する際も同じパターンを適用
+- Providerを追加するだけで新しい状態を管理可能
+
+**レイヤー分離**:
+- UIとビジネスロジックが分離されている
+- データ層の変更がUIに影響しない
+- ストレージの実装を簡単に変更可能
+
+### 4. パフォーマンス
+
+**効率的な状態更新**:
+- `notifyListeners()` により必要な部分のみ再描画
+- `ref.watch()` で細かい粒度での監視が可能
+- 不要な `setState()` 呼び出しを削減
+
+**非同期処理の最適化**:
+- `FutureProvider` で非同期初期化を管理
+- UI ブロックを防止
+- ローディング状態の自動管理
 
 ---
 
@@ -684,5 +1050,5 @@ Item {
 
 ---
 
-**最終更新**: 2025-01-04
+**最終更新**: 2026-01-04（Riverpod状態管理の追加）
 
