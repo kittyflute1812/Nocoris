@@ -5,6 +5,7 @@
 ![Framework](https://img.shields.io/badge/Framework-Flutter-02569B?logo=flutter&style=flat)
 ![GitHub last commit](https://img.shields.io/github/last-commit/kittyflute1812/Nocoris?color=red)
 ![License](https://img.shields.io/github/license/kittyflute1812/Nocoris)
+[![CI](https://github.com/kittyflute1812/Nocoris/actions/workflows/ci.yml/badge.svg)](https://github.com/kittyflute1812/Nocoris/actions/workflows/ci.yml)
 
 ## 📱 概要
 
