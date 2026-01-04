@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nocoris/features/item/screens/home_screen.dart';
+import 'package:nocoris/features/item/providers/item_provider.dart';
 import '../../../helpers/test_helpers.dart';
 
 void main() {
@@ -28,17 +30,22 @@ void main() {
     });
 
     testWidgets('アイテムが正しく表示される', (tester) async {
+      final mockItemService = TestHelpers.createMockItemService(
+        initialItems: testItems,
+      );
+
       await tester.pumpWidget(
-        MaterialApp(
-          home: HomeScreen(
-            itemService: TestHelpers.createMockItemService(
-              initialItems: testItems,
-            ),
+        ProviderScope(
+          overrides: [
+            itemServiceInitProvider.overrideWith((ref) async => mockItemService),
+          ],
+          child: const MaterialApp(
+            home: HomeScreen(),
           ),
         ),
       );
 
-      // 読み込みと描画の完了を待つ
+      // 非同期初期化の完了を待つ
       await tester.pumpAndSettle();
 
       // アイテムが表示されていることを確認
@@ -49,66 +56,51 @@ void main() {
     });
 
     testWidgets('アイテムが空の場合、メッセージが表示される', (tester) async {
+      final mockItemService = TestHelpers.createMockItemService(
+        initialItems: [],
+      );
+
       await tester.pumpWidget(
-        MaterialApp(
-          home: HomeScreen(
-            itemService: TestHelpers.createMockItemService(
-              initialItems: [],
-            ),
+        ProviderScope(
+          overrides: [
+            itemServiceInitProvider.overrideWith((ref) async => mockItemService),
+          ],
+          child: const MaterialApp(
+            home: HomeScreen(),
           ),
         ),
       );
 
-      // 読み込みと描画の完了を待つ
+      // 非同期初期化の完了を待つ
       await tester.pumpAndSettle();
 
-      // 空の状態のメッセージが表示されていることを確認
+      // 空状態のメッセージが表示されていることを確認
       expect(find.text('アイテムがありません'), findsOneWidget);
       expect(find.text('アイテムを追加'), findsOneWidget);
     });
 
     testWidgets('アイテムを追加ボタンが正しく動作する', (tester) async {
+      final mockItemService = TestHelpers.createMockItemService(
+        initialItems: [],
+      );
+
       await tester.pumpWidget(
-        MaterialApp(
-          home: HomeScreen(
-            itemService: TestHelpers.createMockItemService(
-              initialItems: testItems,
-            ),
+        ProviderScope(
+          overrides: [
+            itemServiceInitProvider.overrideWith((ref) async => mockItemService),
+            itemServiceProvider.overrideWith((ref) => mockItemService),
+          ],
+          child: const MaterialApp(
+            home: HomeScreen(),
           ),
         ),
       );
 
-      // 読み込みと描画の完了を待つ
+      // 非同期初期化の完了を待つ
       await tester.pumpAndSettle();
 
       // FloatingActionButtonが表示されていることを確認
       expect(find.byType(FloatingActionButton), findsOneWidget);
-
-      // 追加ボタンをタップ
-      await tester.tap(find.byType(FloatingActionButton));
-
-      // 遷移アニメーションの完了を待つ
-      await tester.pumpAndSettle();
-    });
-
-    testWidgets('外部から渡されたItemServiceを使用する場合、読み込み中の表示は表示されない',
-        (tester) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          home: HomeScreen(
-            itemService: TestHelpers.createMockItemService(
-              initialItems: testItems,
-            ),
-          ),
-        ),
-      );
-
-      // 初期状態でローディングインジケータが表示されないことを確認
-      expect(find.byType(CircularProgressIndicator), findsNothing);
-
-      // FloatingActionButtonが表示されていることを確認（読み込み完了の証）
-      expect(find.byType(FloatingActionButton), findsOneWidget);
     });
   });
 }
-

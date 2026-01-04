@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/item_service.dart';
+import '../providers/item_provider.dart';
 import '../widgets/item_card.dart';
 import '../screens/item_form_screen.dart';
 import '../../../common/widgets/error_view.dart';
@@ -11,70 +13,46 @@ import '../../../core/constants/app_strings.dart';
 /// メイン画面
 /// 
 /// アイテム一覧の表示と、アイテムの追加・編集・削除機能を提供します。
-class HomeScreen extends StatefulWidget {
-  final ItemService? itemService;
-
-  const HomeScreen({super.key, this.itemService});
+class HomeScreen extends ConsumerStatefulWidget {
+  const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-  late ItemService _itemService;
-  bool _isLoading = true;
-  String? _errorMessage;
-
-  @override
-  void initState() {
-    super.initState();
-    if (widget.itemService != null) {
-      _itemService = widget.itemService!;
-      _isLoading = false;
-    } else {
-      _initializeItemService();
-    }
-  }
-
-  /// ItemServiceの初期化
-  Future<void> _initializeItemService() async {
-    try {
-      _itemService = await ItemService.create();
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-          _errorMessage = null;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-          _errorMessage = '${AppStrings.initializationError}: ${e.toString()}';
-        });
-      }
-    }
-  }
-
+class _HomeScreenState extends ConsumerState<HomeScreen> {
   /// アイテム作成/編集画面を表示
   Future<void> _showItemFormDialog([String? itemId]) async {
+    final itemServiceAsync = ref.read(itemServiceInitProvider);
+    final itemService = itemServiceAsync.value;
+    if (itemService == null) return;
+    
     final result = await Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => ItemFormScreen(
-          item: itemId != null ? _itemService.getItemById(itemId) : null,
-          itemService: _itemService,
+        builder: (context) => ProviderScope(
+          overrides: [
+            itemServiceProvider.overrideWith((ref) => itemService),
+          ],
+          child: ItemFormScreen(
+            item: itemId != null ? itemService.getItemById(itemId) : null,
+          ),
         ),
       ),
     );
 
+    // 結果は不要（Providerが自動的に更新を通知）
     if (result == true && mounted) {
-      setState(() {});
+      // 何もしない - Providerが自動的に更新
     }
   }
 
   /// アイテムの削除確認
   Future<void> _showDeleteConfirmation(String itemId) async {
-    final item = _itemService.getItemById(itemId);
+    final itemServiceAsync = ref.read(itemServiceInitProvider);
+    final itemService = itemServiceAsync.value;
+    if (itemService == null) return;
+    
+    final item = itemService.getItemById(itemId);
     if (item == null) return;
 
     final confirmed = await showDialog<bool>(
@@ -89,11 +67,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   /// アイテムを削除
   Future<void> _deleteItem(String itemId) async {
+    final itemServiceAsync = ref.read(itemServiceInitProvider);
+    final itemService = itemServiceAsync.value;
+    if (itemService == null) return;
+    
     try {
-      await _itemService.deleteItem(itemId);
-      if (mounted) {
-        setState(() {});
-      }
+      await itemService.deleteItem(itemId);
     } catch (e) {
       _showErrorSnackBar('${AppStrings.genericError}: ${e.toString()}');
     }
@@ -107,9 +86,6 @@ class _HomeScreenState extends State<HomeScreen> {
     if (!mounted) return;
     try {
       await operation();
-      if (mounted) {
-        setState(() {});
-      }
     } catch (e) {
       _showErrorSnackBar('${AppStrings.genericError}: ${e.toString()}');
     }
@@ -128,67 +104,114 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final itemServiceAsync = ref.watch(itemServiceInitProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(AppConstants.appName),
         centerTitle: true,
       ),
-      body: _buildBody(),
-      floatingActionButton: _buildFloatingActionButton(),
+      body: itemServiceAsync.when(
+        data: (itemService) {
+          // ItemServiceが初期化されたら、ProviderScopeにオーバーライドして提供
+          return ProviderScope(
+            overrides: [
+              itemServiceProvider.overrideWith((ref) => itemService),
+            ],
+            child: _HomeScreenBody(
+              onShowItemFormDialog: _showItemFormDialog,
+              onShowDeleteConfirmation: _showDeleteConfirmation,
+              onHandleCountChange: _handleCountChange,
+            ),
+          );
+        },
+        loading: () => const LoadingView(),
+        error: (error, stack) => ErrorView(
+          message: '${AppStrings.initializationError}: ${error.toString()}',
+          onRetry: () {
+            ref.invalidate(itemServiceInitProvider);
+          },
+        ),
+      ),
+      floatingActionButton: itemServiceAsync.maybeWhen(
+        data: (_) => FloatingActionButton(
+          onPressed: () => _showItemFormDialog(),
+          tooltip: AppStrings.addItem,
+          child: const Icon(Icons.add),
+        ),
+        orElse: () => null,
+      ),
     );
   }
+}
 
-  /// ボディ部分を構築
-  Widget _buildBody() {
-    if (_isLoading) {
-      return const LoadingView();
+/// ホーム画面のボディ部分
+class _HomeScreenBody extends ConsumerStatefulWidget {
+  final Future<void> Function([String?]) onShowItemFormDialog;
+  final Future<void> Function(String) onShowDeleteConfirmation;
+  final Future<void> Function(String, Future<bool> Function()) onHandleCountChange;
+
+  const _HomeScreenBody({
+    required this.onShowItemFormDialog,
+    required this.onShowDeleteConfirmation,
+    required this.onHandleCountChange,
+  });
+
+  @override
+  ConsumerState<_HomeScreenBody> createState() => _HomeScreenBodyState();
+}
+
+class _HomeScreenBodyState extends ConsumerState<_HomeScreenBody> {
+  ItemService? _itemService;
+
+  @override
+  void initState() {
+    super.initState();
+    // ItemServiceの変更を監視
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _itemService = ref.read(itemServiceProvider);
+      _itemService!.addListener(_onItemServiceChanged);
+    });
+  }
+
+  @override
+  void dispose() {
+    // リスナーを削除
+    _itemService?.removeListener(_onItemServiceChanged);
+    super.dispose();
+  }
+
+  void _onItemServiceChanged() {
+    if (mounted) {
+      setState(() {});
     }
+  }
 
-    if (_errorMessage != null) {
-      return ErrorView(
-        message: _errorMessage!,
-        onRetry: () {
-          setState(() {
-            _isLoading = true;
-            _errorMessage = null;
-          });
-          _initializeItemService();
-        },
-      );
-    }
+  @override
+  Widget build(BuildContext context) {
+    final itemService = ref.read(itemServiceProvider);
 
-    if (_itemService.items.isEmpty) {
+    if (itemService.items.isEmpty) {
       return EmptyStateView(
         message: AppStrings.noItems,
         actionLabel: AppStrings.addItem,
-        onAction: () => _showItemFormDialog(),
+        onAction: () => widget.onShowItemFormDialog(),
         icon: Icons.inventory_2_outlined,
       );
     }
 
     return _ItemList(
-      itemService: _itemService,
-      onDecrement: (itemId) => _handleCountChange(
+      itemService: itemService,
+      onDecrement: (itemId) => widget.onHandleCountChange(
         itemId,
-        () => _itemService.decrementItem(itemId),
+        () => itemService.decrementItem(itemId),
       ),
-      onIncrement: (itemId) => _handleCountChange(
+      onIncrement: (itemId) => widget.onHandleCountChange(
         itemId,
-        () => _itemService.incrementItem(itemId),
+        () => itemService.incrementItem(itemId),
       ),
-      onEdit: _showItemFormDialog,
-      onDelete: _showDeleteConfirmation,
-    );
-  }
-
-  /// フローティングアクションボタンを構築
-  Widget? _buildFloatingActionButton() {
-    if (_isLoading) return null;
-
-    return FloatingActionButton(
-      onPressed: () => _showItemFormDialog(),
-      tooltip: AppStrings.addItem,
-      child: const Icon(Icons.add),
+      onEdit: widget.onShowItemFormDialog,
+      onDelete: widget.onShowDeleteConfirmation,
     );
   }
 }

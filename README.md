@@ -21,6 +21,7 @@ iPhoneユーザー向けの残数管理アプリケーション「Nocoris（ノ�
 - **Dart**: v3.7.2
 
 ### 主要パッケージ
+- `flutter_riverpod` (v2.6.1): 状態管理
 - `shared_preferences` (v2.5.3): ローカルデータ永続化
 - `uuid` (v4.3.3): ユニークID生成
 - `logger` (v2.3.0): ロギング
@@ -37,26 +38,45 @@ iPhoneユーザー向けの残数管理アプリケーション「Nocoris（ノ�
 Nocoris/
 ├── lib/
 │   ├── main.dart                    # アプリケーションのエントリーポイント
-│   ├── models/
-│   │   └── item.dart                # アイテムデータモデル
-│   ├── screens/
-│   │   ├── home_screen.dart         # メイン画面（アイテム一覧）
-│   │   └── item_form_screen.dart    # アイテム作成・編集画面
-│   ├── services/
-│   │   ├── item_service.dart        # アイテム管理ビジネスロジック
-│   │   └── storage_service.dart     # ローカルストレージ抽象化層
-│   ├── theme/
-│   │   └── app_theme.dart           # アプリケーションテーマ定義
-│   └── widgets/
-│       └── item_card.dart           # アイテム表示カード
+│   ├── app.dart                     # MyAppウィジェット定義
+│   ├── core/                        # コア機能
+│   │   ├── constants/
+│   │   │   ├── app_constants.dart   # アプリ定数
+│   │   │   └── app_strings.dart     # 文字列定数
+│   │   ├── services/
+│   │   │   └── storage_service.dart # ローカルストレージ抽象化層
+│   │   ├── theme/
+│   │   │   └── app_theme.dart       # アプリケーションテーマ定義
+│   │   └── widgets/                 # 共通ウィジェット
+│   │       ├── empty_state_view.dart
+│   │       ├── error_view.dart
+│   │       └── loading_view.dart
+│   └── features/                    # 機能別モジュール
+│       └── item/
+│           ├── models/
+│           │   └── item.dart        # アイテムデータモデル
+│           ├── providers/
+│           │   └── item_provider.dart # Riverpod Provider定義
+│           ├── screens/
+│           │   ├── home_screen.dart # メイン画面（アイテム一覧）
+│           │   └── item_form_screen.dart # アイテム作成・編集画面
+│           ├── services/
+│           │   └── item_service.dart # アイテム管理ビジネスロジック
+│           └── widgets/
+│               └── item_card.dart   # アイテム表示カード
 ├── test/
 │   ├── helpers/
 │   │   └── test_helpers.dart        # テストユーティリティ
-│   ├── models/
-│   │   └── item_test.dart           # アイテムモデルのテスト
-│   ├── screens/                     # 画面のウィジェットテスト
-│   ├── services/                    # サービス層の単体テスト
-│   └── widgets/                     # ウィジェットの単体テスト
+│   ├── core/
+│   │   └── services/
+│   │       └── storage_service_test.dart
+│   └── features/
+│       └── item/
+│           ├── models/
+│           │   └── item_test.dart   # アイテムモデルのテスト
+│           ├── screens/             # 画面のウィジェットテスト
+│           ├── services/            # サービス層の単体テスト
+│           └── widgets/             # ウィジェットの単体テスト
 ├── ios/                             # iOSプラットフォーム固有ファイル
 ├── macos/                           # macOSプラットフォーム固有ファイル
 ├── android/                         # Androidプラットフォーム固有ファイル
@@ -71,34 +91,100 @@ Nocoris/
 ┌─────────────────────────────────────────┐
 │         Presentation Layer              │
 │  (Screens & Widgets)                    │
-│  - HomeScreen                           │
-│  - ItemFormScreen                       │
+│  - HomeScreen (ConsumerStatefulWidget)  │
+│  - ItemFormScreen (ConsumerStatefulWidget)│
 │  - ItemCard                             │
+└─────────────────┬───────────────────────┘
+                  │ ref.watch/ref.read
+┌─────────────────▼───────────────────────┐
+│         State Management Layer          │
+│  (Riverpod Providers)                   │
+│  - itemServiceProvider                  │
+│  - itemServiceInitProvider              │
 └─────────────────┬───────────────────────┘
                   │
 ┌─────────────────▼───────────────────────┐
 │         Business Logic Layer            │
-│  (Services)                             │
+│  (Services - ChangeNotifier)            │
 │  - ItemService                          │
 │    - CRUD操作                           │
 │    - カウント操作                        │
+│    - notifyListeners()                  │
 └─────────────────┬───────────────────────┘
                   │
 ┌─────────────────▼───────────────────────┐
 │         Data Layer                      │
 │  (Models & Storage)                     │
-│  - Item (データモデル)                   │
+│  - Item (不変データモデル)               │
 │  - StorageService                       │
 │    (shared_preferences抽象化)           │
 └─────────────────────────────────────────┘
 ```
 
+### 状態管理アーキテクチャ
+
+**Riverpod + ChangeNotifier パターン**
+
+```dart
+// 1. Provider定義 (lib/features/item/providers/item_provider.dart)
+final itemServiceProvider = ChangeNotifierProvider<ItemService>((ref) {
+  throw UnimplementedError('itemServiceProvider must be overridden');
+});
+
+final itemServiceInitProvider = FutureProvider<ItemService>((ref) async {
+  return await ItemService.create();
+});
+
+// 2. Service実装 (lib/features/item/services/item_service.dart)
+class ItemService extends ChangeNotifier {
+  // 状態変更時に notifyListeners() を呼び出し
+  Future<Item> createItem(String name, int count) async {
+    final item = Item.create(name: name, initialCount: count);
+    _items.add(item);
+    await _saveItems();
+    notifyListeners(); // UIに変更を通知
+    return item;
+  }
+}
+
+// 3. UI実装 (lib/features/item/screens/home_screen.dart)
+class HomeScreen extends ConsumerStatefulWidget {
+  @override
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends ConsumerState<HomeScreen> {
+  @override
+  Widget build(BuildContext context) {
+    final itemServiceAsync = ref.watch(itemServiceInitProvider);
+    // 状態が変更されると自動的に再描画
+  }
+}
+```
+
 ### データフロー
 
-1. **画面表示**: `HomeScreen` → `ItemService.items` → `ItemCard`
-2. **アイテム作成**: `ItemFormScreen` → `ItemService.createItem()` → `StorageService.saveItems()`
-3. **カウント操作**: `ItemCard` → `ItemService.incrementItem()/decrementItem()` → `StorageService.saveItems()`
-4. **データ永続化**: すべての変更操作後に自動的に `shared_preferences` へ保存
+1. **アプリ起動**: `main.dart` → `ProviderScope` → `MyApp`
+2. **画面表示**: `HomeScreen` → `ref.watch(itemServiceInitProvider)` → `ItemService.items` → `ItemCard`
+3. **アイテム作成**: `ItemFormScreen` → `ref.read(itemServiceProvider).createItem()` → `notifyListeners()` → UI自動更新
+4. **カウント操作**: `ItemCard` → `ItemService.incrementItem()` → `notifyListeners()` → UI自動更新
+5. **データ永続化**: すべての変更操作後に自動的に `shared_preferences` へ保存
+
+### 依存性注入
+
+Riverpodの `ProviderScope` を使用した依存性注入により、テスト時にモックサービスを簡単に注入できます。
+
+```dart
+// テスト時のモック注入例
+await tester.pumpWidget(
+  ProviderScope(
+    overrides: [
+      itemServiceProvider.overrideWith((ref) => mockItemService),
+    ],
+    child: const MaterialApp(home: HomeScreen()),
+  ),
+);
+```
 
 ## 🚀 セットアップ
 
@@ -189,11 +275,13 @@ open coverage/html/index.html
 
 - **アイテム管理**: CRUD操作（作成・読取・更新・削除）
 - **カウント機能**: インクリメント・デクリメント・直接設定
+- **状態管理**: Riverpod + ChangeNotifierによる効率的な状態管理
 - **データ永続化**: `shared_preferences`によるローカル保存
 - **UI実装**: メイン画面、アイテム作成/編集画面
 - **テーマ**: ライト/ダークモード対応
-- **テスト**: 単体テスト、ウィジェットテスト（39テスト、すべてパス）
+- **テスト**: 単体テスト、ウィジェットテスト（40テスト、すべてパス）
 - **エラーハンドリング**: 非同期処理のエラー処理、ユーザーフィードバック
+- **アーキテクチャ**: 機能ベースのディレクトリ構造、依存性注入
 
 ### 🚧 開発中・予定の機能
 

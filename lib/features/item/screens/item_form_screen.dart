@@ -1,60 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/item.dart';
-import '../services/item_service.dart';
-import '../../../common/widgets/error_view.dart';
-import '../../../common/widgets/loading_view.dart';
+import '../providers/item_provider.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/constants/app_strings.dart';
 
 /// アイテムの作成・編集フォーム画面
-class ItemFormScreen extends StatefulWidget {
+class ItemFormScreen extends ConsumerStatefulWidget {
   final Item? item;
-  final ItemService? itemService;
 
   const ItemFormScreen({
     super.key,
     this.item,
-    this.itemService,
   });
 
   @override
-  State<ItemFormScreen> createState() => _ItemFormScreenState();
+  ConsumerState<ItemFormScreen> createState() => _ItemFormScreenState();
 }
 
-class _ItemFormScreenState extends State<ItemFormScreen> {
+class _ItemFormScreenState extends ConsumerState<ItemFormScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _countController = TextEditingController();
-  ItemService? _itemService;
-  bool _isLoading = true;
-  String? _errorMessage;
 
   @override
   void initState() {
     super.initState();
-    _initializeItemService();
     _initializeFormFields();
-  }
-
-  /// ItemServiceの初期化
-  Future<void> _initializeItemService() async {
-    try {
-      _itemService = widget.itemService ?? await ItemService.create();
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-          _errorMessage = null;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-          _errorMessage = '${AppStrings.initializationError}: ${e.toString()}';
-        });
-      }
-    }
   }
 
   /// フォームフィールドの初期化
@@ -76,17 +49,18 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
 
   /// アイテムを保存
   Future<void> _saveItem() async {
-    if (!_formKey.currentState!.validate() || _itemService == null) {
+    if (!_formKey.currentState!.validate()) {
       return;
     }
 
     try {
       final name = _nameController.text;
       final count = int.parse(_countController.text);
+      final itemService = ref.read(itemServiceProvider);
 
       final success = widget.item != null
-          ? await _updateItem(count)
-          : await _createItem(name, count);
+          ? await _updateItem(itemService, count)
+          : await _createItem(itemService, name, count);
 
       if (mounted && success) {
         Navigator.of(context).pop(true);
@@ -97,8 +71,8 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
   }
 
   /// 既存アイテムを更新
-  Future<bool> _updateItem(int count) async {
-    final success = await _itemService!.updateItem(widget.item!.id, count);
+  Future<bool> _updateItem(itemService, int count) async {
+    final success = await itemService.updateItem(widget.item!.id, count);
     if (!success && mounted) {
       _showErrorSnackBar(AppStrings.updateError);
     }
@@ -106,8 +80,8 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
   }
 
   /// 新しいアイテムを作成
-  Future<bool> _createItem(String name, int count) async {
-    await _itemService!.createItem(name, count);
+  Future<bool> _createItem(itemService, String name, int count) async {
+    await itemService.createItem(name, count);
     return true;
   }
 
@@ -130,45 +104,23 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.save),
-            onPressed: _isLoading ? null : _saveItem,
+            onPressed: _saveItem,
             tooltip: AppStrings.saveItemTooltip,
           ),
         ],
       ),
-      body: _buildBody(),
+      body: _ItemForm(
+        formKey: _formKey,
+        nameController: _nameController,
+        countController: _countController,
+        isEditMode: widget.item != null,
+      ),
     );
   }
 
   /// タイトルを取得
   String _getTitle() {
     return widget.item != null ? AppStrings.editItem : AppStrings.newItem;
-  }
-
-  /// ボディ部分を構築
-  Widget _buildBody() {
-    if (_isLoading) {
-      return const LoadingView();
-    }
-
-    if (_errorMessage != null) {
-      return ErrorView(
-        message: _errorMessage!,
-        onRetry: () {
-          setState(() {
-            _isLoading = true;
-            _errorMessage = null;
-          });
-          _initializeItemService();
-        },
-      );
-    }
-
-    return _ItemForm(
-      formKey: _formKey,
-      nameController: _nameController,
-      countController: _countController,
-      isEditMode: widget.item != null,
-    );
   }
 }
 
@@ -272,4 +224,3 @@ class _ItemCountField extends StatelessWidget {
     );
   }
 }
-

@@ -15,27 +15,9 @@ iPhoneユーザー向けの残数管理アプリケーション「Nocoris（ノ�
 
 ## 🚧 今後対応予定の機能
 
-### 1. 状態管理の改善
-- [ ] より適切な状態管理ソリューションの導入
-  - [ ] Provider/Riverpodの導入検討
-  - [ ] 状態管理パターンの選定（BLoC/Provider/Riverpod）
-  - [ ] グローバル状態の最小化
-  - [ ] 状態とUIコンポーネントの分離強化
-  - [ ] 不変データ構造の徹底
-
-**技術要件**:
-- Provider/Riverpod パッケージ
-- 状態管理アーキテクチャの設計
-- 既存コードのリファクタリング
-
-**実装の流れ**:
-1. 状態管理ソリューションの選定（Provider推奨）
-2. 依存性注入の実装
-3. ItemServiceのProvider化
-4. 画面ごとの状態管理の実装
-5. テストの更新
-
-**優先度**: 中（アプリが複雑になる前に導入推奨）
+### 1. ~~状態管理の改善~~ ✅ **完了**
+- [x] Riverpod + ChangeNotifierによる状態管理を導入済み
+- 詳細は `README.md` と `ARCHITECTURE.md` を参照
 
 ### 2. デザインアップデート 🎨
 - [ ] アイテムアイコン機能の実装
@@ -317,13 +299,23 @@ iPhoneユーザー向けの残数管理アプリケーション「Nocoris（ノ�
 ## 📝 開発メモ
 
 ### 最近の変更
+- 2026-01-04: **Riverpod による状態管理の導入完了** ✅
+  - `flutter_riverpod` パッケージの導入
+  - `ItemService` を `ChangeNotifier` として実装
+  - `itemServiceProvider` と `itemServiceInitProvider` の作成
+  - `HomeScreen` と `ItemFormScreen` を `ConsumerWidget` に変更
+  - 全テストをRiverpod対応に更新（40テスト全て成功）
+  - 依存性注入の実装完了
+- 2026-01-04: drop_counter → Nocoris への移行完了
+  - パッケージ名、バンドル識別子、テストファイルを全て更新
+  - iOS/Android/macOS の設定ファイルを修正
+  - 43箇所の修正を完了
 - 2026-01-04: .cursorrulesに基づくリファクタリング完了
   - 機能ベースのディレクトリ構造に再構成
   - 共通ウィジェット（ErrorView, LoadingView, EmptyStateView）の作成
   - 定数の集約（AppConstants, AppStrings）
   - 巨大なウィジェットの分解
   - Itemモデルの不変化（copyWithメソッド追加）
-  - すべてのテスト（41個）が正常にパス
 - 2026-01-04: CardTheme → CardThemeData に修正（CI エラー解消）
 - 2026-01-04: `use_build_context_synchronously` 警告を解消
 - 2026-01-04: `updateItem()` の戻り値チェックを実装
@@ -331,7 +323,7 @@ iPhoneユーザー向けの残数管理アプリケーション「Nocoris（ノ�
 - 2026-01-04: 不要なプラットフォームディレクトリを削除（web, windows, linux）
 
 ### 技術的負債
-- 状態管理: 現在はsetStateベース。アプリが複雑化する前にProvider/Riverpodの導入を推奨
+- ~~状態管理: 現在はsetStateベース。アプリが複雑化する前にProvider/Riverpodの導入を推奨~~ ✅ **完了（Riverpod導入済み）**
 - ナビゲーション: MaterialPageRouteを使用。型安全なgo_routerへの移行を検討
 - テストカバレッジ: 単体テストとウィジェットテストは充実。統合テストとE2Eテストの追加を推奨
 
@@ -340,6 +332,7 @@ iPhoneユーザー向けの残数管理アプリケーション「Nocoris（ノ�
    - アイテム管理、データ永続化、UI実装、テスト
    - .cursorrulesに基づくリファクタリング完了
    - drop_counter → Nocoris への移行完了
+   - **Riverpodによる状態管理の導入完了** ✅
 
 2. **v1.1.0**: デザインリニューアル 🎨 **次のステップ**
    - アイテムアイコン/画像機能の追加
@@ -348,7 +341,7 @@ iPhoneユーザー向けの残数管理アプリケーション「Nocoris（ノ�
    - アニメーション効果の追加
 
 3. **v1.2.0**: アーキテクチャ改善
-   - 状態管理の導入（Provider/Riverpod）
+   - ~~状態管理の導入（Provider/Riverpod）~~ ✅ **v1.0.0で完了**
    - 型安全なナビゲーション（go_router）
    - CI/CD環境の構築
 
@@ -381,6 +374,7 @@ iPhoneユーザー向けの残数管理アプリケーション「Nocoris（ノ�
 - アイテム管理、データ永続化、UI実装、テスト
 - .cursorrulesに基づくリファクタリング
 - drop_counter → Nocoris への移行
+- **Riverpodによる状態管理の導入** ✅
 
 **Phase 2: デザインリニューアル** 🎨 **次のステップ**
 - アイテムアイコン/画像機能の追加
@@ -388,7 +382,7 @@ iPhoneユーザー向けの残数管理アプリケーション「Nocoris（ノ�
 - UIコンポーネントとアニメーションの改善
 
 **Phase 3: アーキテクチャ改善** 🎯 推奨
-- 状態管理の導入（Provider/Riverpod）
+- ~~状態管理の導入（Provider/Riverpod）~~ ✅ **完了**
 - 型安全なナビゲーション（go_router）
 - CI/CD環境の構築
 
@@ -406,15 +400,15 @@ iPhoneユーザー向けの残数管理アプリケーション「Nocoris（ノ�
    - アイテムアイコン/画像機能
    - カラーテーマの刷新
    - UIコンポーネントの改善
-2. 状態管理の導入（Provider/Riverpod）
+2. ~~状態管理の導入（Provider/Riverpod）~~ ✅ **完了**
+3. iOSウィジェット機能
 
 ### 中優先度（v1.2.0-1.4.0で対応）
 1. 型安全なナビゲーション（go_router）
 2. CI/CD環境の構築
-3. iOSウィジェット機能
-4. テストカバレッジの拡充
-5. パフォーマンス最適化
-6. カテゴリ・ソート機能
+3. テストカバレッジの拡充
+4. パフォーマンス最適化
+5. カテゴリ・ソート機能
 
 ### 低優先度（v2.0.0以降で対応）
 1. セキュリティ対策の強化
