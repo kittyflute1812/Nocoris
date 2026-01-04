@@ -23,11 +23,19 @@ class HomeScreen extends ConsumerStatefulWidget {
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   /// アイテム作成/編集画面を表示
   Future<void> _showItemFormDialog([String? itemId]) async {
-    final itemService = ref.read(itemServiceProvider);
+    final itemServiceAsync = ref.read(itemServiceInitProvider);
+    final itemService = itemServiceAsync.value;
+    if (itemService == null) return;
+    
     final result = await Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => ItemFormScreen(
-          item: itemId != null ? itemService.getItemById(itemId) : null,
+        builder: (context) => ProviderScope(
+          overrides: [
+            itemServiceProvider.overrideWith((ref) => itemService),
+          ],
+          child: ItemFormScreen(
+            item: itemId != null ? itemService.getItemById(itemId) : null,
+          ),
         ),
       ),
     );
@@ -40,7 +48,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   /// アイテムの削除確認
   Future<void> _showDeleteConfirmation(String itemId) async {
-    final itemService = ref.read(itemServiceProvider);
+    final itemServiceAsync = ref.read(itemServiceInitProvider);
+    final itemService = itemServiceAsync.value;
+    if (itemService == null) return;
+    
     final item = itemService.getItemById(itemId);
     if (item == null) return;
 
@@ -56,8 +67,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   /// アイテムを削除
   Future<void> _deleteItem(String itemId) async {
+    final itemServiceAsync = ref.read(itemServiceInitProvider);
+    final itemService = itemServiceAsync.value;
+    if (itemService == null) return;
+    
     try {
-      await ref.read(itemServiceProvider).deleteItem(itemId);
+      await itemService.deleteItem(itemId);
     } catch (e) {
       _showErrorSnackBar('${AppStrings.genericError}: ${e.toString()}');
     }
@@ -131,7 +146,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 }
 
 /// ホーム画面のボディ部分
-class _HomeScreenBody extends ConsumerWidget {
+class _HomeScreenBody extends ConsumerStatefulWidget {
   final Future<void> Function([String?]) onShowItemFormDialog;
   final Future<void> Function(String) onShowDeleteConfirmation;
   final Future<void> Function(String, Future<bool> Function()) onHandleCountChange;
@@ -143,30 +158,60 @@ class _HomeScreenBody extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final itemService = ref.watch(itemServiceProvider);
+  ConsumerState<_HomeScreenBody> createState() => _HomeScreenBodyState();
+}
+
+class _HomeScreenBodyState extends ConsumerState<_HomeScreenBody> {
+  ItemService? _itemService;
+
+  @override
+  void initState() {
+    super.initState();
+    // ItemServiceの変更を監視
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _itemService = ref.read(itemServiceProvider);
+      _itemService!.addListener(_onItemServiceChanged);
+    });
+  }
+
+  @override
+  void dispose() {
+    // リスナーを削除
+    _itemService?.removeListener(_onItemServiceChanged);
+    super.dispose();
+  }
+
+  void _onItemServiceChanged() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final itemService = ref.read(itemServiceProvider);
 
     if (itemService.items.isEmpty) {
       return EmptyStateView(
         message: AppStrings.noItems,
         actionLabel: AppStrings.addItem,
-        onAction: () => onShowItemFormDialog(),
+        onAction: () => widget.onShowItemFormDialog(),
         icon: Icons.inventory_2_outlined,
       );
     }
 
     return _ItemList(
       itemService: itemService,
-      onDecrement: (itemId) => onHandleCountChange(
+      onDecrement: (itemId) => widget.onHandleCountChange(
         itemId,
         () => itemService.decrementItem(itemId),
       ),
-      onIncrement: (itemId) => onHandleCountChange(
+      onIncrement: (itemId) => widget.onHandleCountChange(
         itemId,
         () => itemService.incrementItem(itemId),
       ),
-      onEdit: onShowItemFormDialog,
-      onDelete: onShowDeleteConfirmation,
+      onEdit: widget.onShowItemFormDialog,
+      onDelete: widget.onShowDeleteConfirmation,
     );
   }
 }

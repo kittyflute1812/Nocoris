@@ -4,7 +4,8 @@ import '../services/item_service.dart';
 /// ItemServiceのProvider
 /// 
 /// アプリ全体でItemServiceのインスタンスを共有します。
-final itemServiceProvider = ChangeNotifierProvider<ItemService>((ref) {
+/// Providerを使用することで、手動でライフサイクルを管理します。
+final itemServiceProvider = Provider<ItemService>((ref) {
   throw UnimplementedError('itemServiceProvider must be overridden');
 });
 

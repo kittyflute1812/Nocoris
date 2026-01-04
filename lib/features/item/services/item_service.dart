@@ -11,7 +11,6 @@ class ItemService extends ChangeNotifier {
   final Logger _logger = Logger();
   final StorageService _storage;
   List<Item> _items = [];
-  final bool _isLoading = false;
 
   ItemService(this._storage) {
     _loadItems();
@@ -25,9 +24,6 @@ class ItemService extends ChangeNotifier {
 
   /// アイテムリストの不変コピーを取得
   List<Item> get items => List.unmodifiable(_items);
-
-  /// ローディング状態を取得
-  bool get isLoading => _isLoading;
 
   /// IDでアイテムを検索
   Item? getItemById(String id) {
