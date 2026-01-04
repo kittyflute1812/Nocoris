@@ -8,7 +8,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:drop_counter/main.dart';
+import 'package:drop_counter/app.dart';
 
 void main() {
   testWidgets('アプリが正常に起動する', (WidgetTester tester) async {
