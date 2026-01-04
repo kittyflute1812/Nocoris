@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:drop_counter/core/services/storage_service.dart';
-import 'package:drop_counter/features/item/services/item_service.dart';
+import 'package:nocoris/core/services/storage_service.dart';
+import 'package:nocoris/features/item/services/item_service.dart';
 
 void main() {
   group('ItemService Tests', () {

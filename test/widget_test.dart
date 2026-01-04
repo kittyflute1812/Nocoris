@@ -8,7 +8,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:drop_counter/app.dart';
+import 'package:nocoris/app.dart';
 
 void main() {
   testWidgets('アプリが正常に起動する', (WidgetTester tester) async {
@@ -20,7 +20,7 @@ void main() {
     await tester.pump(const Duration(seconds: 2));
 
     // アプリタイトルが表示されていることを確認
-    expect(find.text('CountDrop'), findsOneWidget);
+    expect(find.text('Nocoris'), findsOneWidget);
     
     // アプリが正常に起動していることを確認
     // （ローディング中、空のメッセージ、またはFloatingActionButtonのいずれかが表示される）

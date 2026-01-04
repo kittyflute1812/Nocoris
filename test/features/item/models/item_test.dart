@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:drop_counter/features/item/models/item.dart';
+import 'package:nocoris/features/item/models/item.dart';
 
 void main() {
   group('Item Model Tests', () {

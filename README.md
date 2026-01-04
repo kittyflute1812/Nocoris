@@ -1,8 +1,10 @@
-# CountDrop - 残数管理アプリ
+# Nocoris - 残数管理アプリ 🐿️
 
 ## 📱 概要
 
-iPhoneユーザー向けの残数管理アプリケーション。日用品やアイテムの数量を簡単に管理し、ウィジェットからも操作可能なカウンターアプリです。
+iPhoneユーザー向けの残数管理アプリケーション「Nocoris（ノコリス）」。日用品やアイテムの数量を簡単に管理し、ウィジェットからも操作可能なカウンターアプリです。
+
+かわいいリスのキャラクターと一緒に、残数管理を楽しく便利に！
 
 ## 🎯 主な機能
 
@@ -32,7 +34,7 @@ iPhoneユーザー向けの残数管理アプリケーション。日用品や�
 ## 📂 プロジェクト構成
 
 ```
-drop_counter/
+Nocoris/
 ├── lib/
 │   ├── main.dart                    # アプリケーションのエントリーポイント
 │   ├── models/
@@ -111,8 +113,8 @@ drop_counter/
 
 1. **リポジトリのクローン**
 ```bash
-git clone https://github.com/tomomi-hirano/drop_counter.git
-cd drop_counter
+git clone https://github.com/tomomi-hirano/Nocoris.git
+cd Nocoris
 ```
 
 2. **依存パッケージのインストール**
