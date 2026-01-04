@@ -1,0 +1,66 @@
+# Flutter/Dart build outputs and cache
+build/
+.dart_tool/
+.packages
+.pub-preload-cache/
+.pub/
+.flutter-plugins
+.flutter-plugins-dependencies
+*.lock
+
+# Test coverage
+coverage/
+
+# IDE files
+*.iml
+.idea/
+
+# CocoaPods dependencies (large generated files)
+**/Pods/
+**/Podfile.lock
+
+# iOS build artifacts
+**/ios/**/DerivedData/
+**/ios/**/xcuserdata/
+**/ios/Flutter/ephemeral/
+**/ios/Flutter/.last_build_id
+**/ios/Flutter/App.framework
+**/ios/Flutter/Flutter.framework
+**/ios/Flutter/Generated.xcconfig
+**/ios/Runner/GeneratedPluginRegistrant.*
+
+# macOS build artifacts
+**/macos/Flutter/ephemeral/
+**/macos/Flutter/GeneratedPluginRegistrant.swift
+**/xcuserdata/
+
+# Android build artifacts
+**/android/.gradle/
+**/android/captures/
+**/android/local.properties
+**/android/key.properties
+**/android/**/GeneratedPluginRegistrant.java
+*.jks
+
+# Generated plugin registrants
+**/generated_plugin_registrant.dart
+**/windows/flutter/generated_plugin_registrant.*
+**/linux/flutter/generated_plugin_registrant.*
+
+# Symbols
+app.*.symbols
+
+# Environment files and secrets (security best practice)
+.env
+.env.*
+*.key
+*.pem
+credentials.json
+secrets.json
+
+# Logs and temporary files
+*.log
+*.tmp
+*.bak
+.DS_Store
+
