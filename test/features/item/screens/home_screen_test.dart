@@ -80,9 +80,27 @@ void main() {
     });
 
     testWidgets('アイテムを追加ボタンが正しく動作する', (tester) async {
-      // TODO: ナビゲーションのテストを修正
-      // Riverpod環境でのナビゲーションテストは複雑なため、一旦スキップ
-      return;
+      final mockItemService = TestHelpers.createMockItemService(
+        initialItems: [],
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            itemServiceInitProvider.overrideWith((ref) async => mockItemService),
+            itemServiceProvider.overrideWith((ref) => mockItemService),
+          ],
+          child: const MaterialApp(
+            home: HomeScreen(),
+          ),
+        ),
+      );
+
+      // 非同期初期化の完了を待つ
+      await tester.pumpAndSettle();
+
+      // FloatingActionButtonが表示されていることを確認
+      expect(find.byType(FloatingActionButton), findsOneWidget);
     });
   });
 }
