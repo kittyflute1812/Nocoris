@@ -1,5 +1,11 @@
 # Nocoris - 残数管理アプリ 🐿️
 
+![Platform](https://img.shields.io/badge/Platform-iOS-000000?logo=apple&style=flat)
+![Language](https://img.shields.io/badge/Language-Dart%20%7C%20Swift-blue?style=flat)
+![Framework](https://img.shields.io/badge/Framework-Flutter-02569B?logo=flutter&style=flat)
+![GitHub last commit](https://img.shields.io/github/last-commit/kittyflute1812/Nocoris?color=red)
+![License](https://img.shields.io/github/license/kittyflute1812/Nocoris)
+
 ## 📱 概要
 
 iPhoneユーザー向けの残数管理アプリケーション「Nocoris（ノコリス）」。日用品やアイテムの数量を簡単に管理し、ウィジェットからも操作可能なカウンターアプリです。
