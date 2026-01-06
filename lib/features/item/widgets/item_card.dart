@@ -73,6 +73,21 @@ class _ItemCardHeader extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
+        // アイコン表示
+        if (item.icon != null) ...[
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              item.icon!,
+              style: const TextStyle(fontSize: 24),
+            ),
+          ),
+          const SizedBox(width: 12),
+        ],
         Expanded(
           child: Text(
             item.name,

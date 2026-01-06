@@ -38,6 +38,30 @@ void main() {
       expect(find.byIcon(Icons.add), findsOneWidget);
     });
 
+    testWidgets('アイコン付きItemCardが正しく表示されること', (WidgetTester tester) async {
+      final itemWithIcon = testItem.copyWith(icon: '🐿️');
+      
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: ItemCard(
+              item: itemWithIcon,
+              onDecrement: () {},
+              onIncrement: () {},
+              onEdit: () {},
+              onDelete: () {},
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Test Item'), findsOneWidget);
+      expect(find.text('🐿️'), findsOneWidget);
+      expect(find.text('残数: 5'), findsOneWidget);
+      expect(find.byIcon(Icons.remove), findsOneWidget);
+      expect(find.byIcon(Icons.add), findsOneWidget);
+    });
+
     testWidgets('count=0の時にdecrementボタンが無効化されること',
         (WidgetTester tester) async {
       testItem = Item(
