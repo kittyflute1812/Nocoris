@@ -31,11 +31,11 @@ class AppStrings {
   static const String saveItemTooltip = 'アイテムを保存';
 
   // アイテムカード
-  static const String remainingCount = '残数';
+  static const String remainingCount = 'のこり';
   static const String itemMenuTooltip = 'アイテムの操作メニュー';
-  static const String decrementTooltip = '残数を1つ減らす';
-  static const String incrementTooltip = '残数を1つ増やす';
+  static const String decrementTooltip = 'のこりを1つ減らす';
+  static const String incrementTooltip = 'のこりを1つ増やす';
   static String itemNameSemantics(String name) => 'アイテム名: $name';
-  static String remainingCountSemantics(int count) => '残数: $count個';
+  static String remainingCountSemantics(int count) => 'のこり: $count個';
 }
 

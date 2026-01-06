@@ -7,6 +7,7 @@ class Item {
   final String id;
   final String name;
   final int count;
+  final String? icon; // 絵文字アイコン（オプショナル）
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -14,6 +15,7 @@ class Item {
     required this.id,
     required this.name,
     required this.count,
+    this.icon,
     required this.createdAt,
     required this.updatedAt,
   }) : assert(count >= 0, 'Count must be non-negative');
@@ -49,6 +51,7 @@ class Item {
     String? id,
     String? name,
     int? count,
+    String? icon,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -56,6 +59,7 @@ class Item {
       id: id ?? this.id,
       name: name ?? this.name,
       count: count ?? this.count,
+      icon: icon ?? this.icon,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
@@ -67,6 +71,7 @@ class Item {
       id: json['id'] as String,
       name: json['name'] as String,
       count: json['count'] as int,
+      icon: json['icon'] as String?,
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),
     );
@@ -78,6 +83,7 @@ class Item {
       'id': id,
       'name': name,
       'count': count,
+      if (icon != null) 'icon': icon,
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
     };
@@ -87,6 +93,7 @@ class Item {
   factory Item.create({
     required String name,
     required int initialCount,
+    String? icon,
   }) {
     final now = DateTime.now();
     final uuid = Uuid();
@@ -94,6 +101,7 @@ class Item {
       id: uuid.v4(),
       name: name,
       count: initialCount,
+      icon: icon,
       createdAt: now,
       updatedAt: now,
     );
@@ -106,13 +114,14 @@ class Item {
           runtimeType == other.runtimeType &&
           id == other.id &&
           name == other.name &&
-          count == other.count;
+          count == other.count &&
+          icon == other.icon;
 
   @override
-  int get hashCode => id.hashCode ^ name.hashCode ^ count.hashCode;
+  int get hashCode => id.hashCode ^ name.hashCode ^ count.hashCode ^ (icon?.hashCode ?? 0);
 
   @override
   String toString() {
-    return 'Item(id: $id, name: $name, count: $count, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'Item(id: $id, name: $name, count: $count, icon: $icon, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 }

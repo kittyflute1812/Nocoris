@@ -9,6 +9,7 @@ import '../../../common/widgets/loading_view.dart';
 import '../../../common/widgets/empty_state_view.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/constants/app_strings.dart';
+import '../../../core/theme/app_colors.dart';
 
 /// メイン画面
 /// 
@@ -241,6 +242,7 @@ class _ItemList extends StatelessWidget {
         return ItemCard(
           key: ValueKey(item.id),
           item: item,
+          index: index,
           onDecrement: () => onDecrement(item.id),
           onIncrement: () => onIncrement(item.id),
           onEdit: () => onEdit(item.id),
@@ -260,19 +262,30 @@ class _DeleteConfirmationDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text(AppStrings.deleteItemTitle),
+      title: Row(
+        children: [
+          Icon(
+            Icons.warning_amber_rounded,
+            color: AppColors.error,
+            size: 28,
+          ),
+          const SizedBox(width: 12),
+          const Text(AppStrings.deleteItemTitle),
+        ],
+      ),
       content: Text(AppStrings.deleteItemMessage(itemName)),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(false),
           child: const Text(AppStrings.cancel),
         ),
-        TextButton(
+        ElevatedButton(
           onPressed: () => Navigator.of(context).pop(true),
-          child: const Text(
-            AppStrings.delete,
-            style: TextStyle(color: Colors.red),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.error,
+            foregroundColor: Colors.white,
           ),
+          child: const Text(AppStrings.delete),
         ),
       ],
     );
