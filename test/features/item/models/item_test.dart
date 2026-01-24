@@ -175,6 +175,30 @@ void main() {
       expect(testItem.icon, null);
     });
 
+    test('copyWith()メソッドがアイコンを削除できること', () {
+      // まずアイコン付きのアイテムを作成
+      final itemWithIcon = testItem.copyWith(icon: '🐿️');
+      expect(itemWithIcon.icon, '🐿️');
+
+      // アイコンを削除（nullに設定）
+      final itemWithoutIcon = itemWithIcon.copyWith(icon: null);
+      expect(itemWithoutIcon.icon, null);
+      expect(itemWithoutIcon.id, testItem.id);
+      expect(itemWithoutIcon.name, testItem.name);
+      expect(itemWithoutIcon.count, testItem.count);
+    });
+
+    test('copyWith()メソッドでアイコンパラメータを省略した場合、既存のアイコンを維持すること', () {
+      // まずアイコン付きのアイテムを作成
+      final itemWithIcon = testItem.copyWith(icon: '🐿️');
+      expect(itemWithIcon.icon, '🐿️');
+
+      // アイコンパラメータを省略してcopyWith
+      final updatedItem = itemWithIcon.copyWith(count: 10);
+      expect(updatedItem.icon, '🐿️'); // アイコンは維持される
+      expect(updatedItem.count, 10);
+    });
+
     test('等価演算子が正しく動作すること', () {
       final item1 = Item(
         id: '1',

@@ -47,11 +47,16 @@ class Item {
   }
 
   /// プロパティをコピーして新しいインスタンスを作成
+  /// 
+  /// [icon]パラメータについて：
+  /// - パラメータが提供されない場合：既存のアイコンを維持
+  /// - パラメータにnullが渡された場合：アイコンを削除（nullに設定）
+  /// - パラメータに値が渡された場合：新しいアイコンに更新
   Item copyWith({
     String? id,
     String? name,
     int? count,
-    String? icon,
+    Object? icon = _sentinel,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -59,11 +64,14 @@ class Item {
       id: id ?? this.id,
       name: name ?? this.name,
       count: count ?? this.count,
-      icon: icon ?? this.icon,
+      icon: icon == _sentinel ? this.icon : icon as String?,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
   }
+
+  /// copyWithメソッドで「値が提供されなかった」ことを示すセンチネル値
+  static const Object _sentinel = Object();
 
   /// JSONからItemインスタンスを作成
   factory Item.fromJson(Map<String, dynamic> json) {
