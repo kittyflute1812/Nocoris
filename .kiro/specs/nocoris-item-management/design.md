@@ -47,11 +47,13 @@ Nocorisは4層のクリーンアーキテクチャを採用しています：
 #### HomeScreen
 - **責務**: アイテム一覧表示、CRUD操作のトリガー、エラーハンドリング
 - **状態管理**: ConsumerStatefulWidget + Riverpod
+- **プラットフォーム対応**: iOS/macOSではCupertinoウィジェットを適切に使用
 - **主要機能**:
   - アイテム一覧の表示（ListView.builder）
   - アイテム作成・編集・削除のナビゲーション
   - カウント操作（増減）のハンドリング
   - エラー表示とユーザーフィードバック
+  - プラットフォーム固有のUI/UXガイドライン準拠
 
 #### ItemFormScreen
 - **責務**: アイテムの作成・編集フォーム
@@ -146,6 +148,41 @@ class Item {
 - `fromJson(json)`: JSON → Item変換
 - `toJson()`: Item → JSON変換
 - `create(name, count, icon)`: 新規Item作成
+
+#### copyWithメソッドの設計詳細
+
+**センチネル値パターンの実装**:
+オプショナルなフィールド（特に`icon`）において、「値が提供されなかった場合」と「nullに設定する場合」を区別するため、センチネル値パターンを採用しています。
+
+```dart
+class Item {
+  // センチネル値の定義
+  static const Object _sentinel = Object();
+  
+  Item copyWith({
+    String? name,
+    int? count,
+    Object? icon = _sentinel,  // センチネル値をデフォルトに使用
+    DateTime? updatedAt,
+  }) {
+    return Item(
+      id: id,
+      name: name ?? this.name,
+      count: count ?? this.count,
+      icon: identical(icon, _sentinel) ? this.icon : icon as String?,
+      createdAt: createdAt,
+      updatedAt: updatedAt ?? DateTime.now(),
+    );
+  }
+}
+```
+
+**パターンの利点**:
+- `copyWith(icon: null)`: アイコンを明示的にnullに設定（削除）
+- `copyWith()`: アイコンフィールドは変更せず既存値を維持
+- 型安全性を保ちながら、意図的なnull設定と未指定を区別
+
+このパターンは、nocoris-project-guidelines.mdで言及されている通り、freezedパッケージの`Value.absent()`と同様の機能を、外部ライブラリなしで実現します。
 
 ## データモデル
 

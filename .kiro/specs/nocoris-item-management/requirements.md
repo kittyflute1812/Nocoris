@@ -96,7 +96,7 @@ Nocoris（ノコリス）は、日用品やアイテムの残数を簡単に管�
 2. WHEN ユーザーがボタンを押す THEN THE System SHALL 適切な視覚的フィードバックを提供する
 3. WHEN 非同期処理が実行される THEN THE System SHALL ローディング状態を適切に表示する
 4. WHEN エラーが発生する THEN THE System SHALL ユーザーに分かりやすいエラーメッセージを表示する
-5. THE System SHALL iOS/macOSプラットフォームで一貫したユーザーエクスペリエンスを提供する
+5. THE System SHALL iOS/macOSプラットフォームで一貫したユーザーエクスペリエンスを提供する。具体的には、Cupertinoウィジェットを適切に利用し、各プラットフォームの標準的なUI/UXガイドライン（Human Interface Guidelines）に準拠したネイティブアプリのような体験を実現する
 
 ### 要件 8: 絵文字アイコン選択機能
 

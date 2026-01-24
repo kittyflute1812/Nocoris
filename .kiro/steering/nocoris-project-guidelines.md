@@ -57,6 +57,9 @@ lib/
 ### モデルクラス
 - 不変性を保つ
 - `copyWith` メソッドでセンチネル値パターンを使用
+  - オプショナルフィールドで「値未提供」と「null設定」を区別
+  - `static const Object _sentinel = Object();` を定義
+  - `identical(value, _sentinel)` で判定
 - 適切な `toString`, `==`, `hashCode` を実装
 
 ### ウィジェット
