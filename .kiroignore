@@ -64,3 +64,6 @@ secrets.json
 *.bak
 .DS_Store
 
+# Cursor files (no longer needed)
+.cursorignore
+.cursorrules
