@@ -33,7 +33,33 @@ void main() {
       );
 
       expect(find.text('Test Item'), findsOneWidget);
-      expect(find.text('残数: 5'), findsOneWidget);
+      expect(find.text('のこり: '), findsOneWidget);
+      expect(find.text('5'), findsOneWidget);
+      expect(find.byIcon(Icons.remove), findsOneWidget);
+      expect(find.byIcon(Icons.add), findsOneWidget);
+    });
+
+    testWidgets('アイコン付きItemCardが正しく表示されること', (WidgetTester tester) async {
+      final itemWithIcon = testItem.copyWith(icon: '🐿️');
+      
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: ItemCard(
+              item: itemWithIcon,
+              onDecrement: () {},
+              onIncrement: () {},
+              onEdit: () {},
+              onDelete: () {},
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Test Item'), findsOneWidget);
+      expect(find.text('🐿️'), findsOneWidget);
+      expect(find.text('のこり: '), findsOneWidget);
+      expect(find.text('5'), findsOneWidget);
       expect(find.byIcon(Icons.remove), findsOneWidget);
       expect(find.byIcon(Icons.add), findsOneWidget);
     });
@@ -62,10 +88,15 @@ void main() {
         ),
       );
 
-      final decrementButton = tester.widget<IconButton>(
-        find.widgetWithIcon(IconButton, Icons.remove),
+      // 新しいデザインではInkWellを使用しているため、
+      // onTapがnullかどうかを確認
+      final decrementContainer = tester.widget<InkWell>(
+        find.ancestor(
+          of: find.byIcon(Icons.remove),
+          matching: find.byType(InkWell),
+        ).first,
       );
-      expect(decrementButton.onPressed, null);
+      expect(decrementContainer.onTap, null);
     });
 
     testWidgets('減算・加算ボタンのコールバックが正しく呼ばれること',

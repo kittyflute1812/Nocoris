@@ -33,6 +33,17 @@ void main() {
       expect(item.updatedAt.day, DateTime.now().day);
     });
 
+    test('Item.create()がアイコン付きで正しく動作すること', () {
+      final item = Item.create(name: 'New Item', initialCount: 10, icon: '🐿️');
+
+      expect(item.name, 'New Item');
+      expect(item.count, 10);
+      expect(item.icon, '🐿️');
+      expect(item.id, isNotEmpty);
+      expect(item.createdAt.day, DateTime.now().day);
+      expect(item.updatedAt.day, DateTime.now().day);
+    });
+
     test('increment()メソッドが新しいインスタンスを返すこと', () {
       final newItem = testItem.increment();
 
@@ -91,6 +102,18 @@ void main() {
       expect(json['updatedAt'], testItem.updatedAt.toIso8601String());
     });
 
+    test('toJson()メソッドがアイコン付きで正しくJSONを生成すること', () {
+      final itemWithIcon = testItem.copyWith(icon: '🐿️');
+      final json = itemWithIcon.toJson();
+
+      expect(json['id'], '1');
+      expect(json['name'], 'Test Item');
+      expect(json['count'], 5);
+      expect(json['icon'], '🐿️');
+      expect(json['createdAt'], testItem.createdAt.toIso8601String());
+      expect(json['updatedAt'], testItem.updatedAt.toIso8601String());
+    });
+
     test('fromJson()メソッドが正しくItemを生成すること', () {
       final json = {
         'id': '1',
@@ -109,6 +132,26 @@ void main() {
       expect(item.updatedAt, DateTime(2025, 10, 13));
     });
 
+    test('fromJson()メソッドがアイコン付きで正しくItemを生成すること', () {
+      final json = {
+        'id': '1',
+        'name': 'Test Item',
+        'count': 5,
+        'icon': '🐿️',
+        'createdAt': '2025-10-13T00:00:00.000',
+        'updatedAt': '2025-10-13T00:00:00.000',
+      };
+
+      final item = Item.fromJson(json);
+
+      expect(item.id, '1');
+      expect(item.name, 'Test Item');
+      expect(item.count, 5);
+      expect(item.icon, '🐿️');
+      expect(item.createdAt, DateTime(2025, 10, 13));
+      expect(item.updatedAt, DateTime(2025, 10, 13));
+    });
+
     test('copyWith()メソッドが正しく動作すること', () {
       final newItem = testItem.copyWith(count: 10);
 
@@ -118,6 +161,42 @@ void main() {
       expect(newItem.createdAt, testItem.createdAt);
       // 元のアイテムは変更されない
       expect(testItem.count, 5);
+    });
+
+    test('copyWith()メソッドがアイコンを正しく更新すること', () {
+      final newItem = testItem.copyWith(icon: '🐿️');
+
+      expect(newItem.icon, '🐿️');
+      expect(newItem.id, testItem.id);
+      expect(newItem.name, testItem.name);
+      expect(newItem.count, testItem.count);
+      expect(newItem.createdAt, testItem.createdAt);
+      // 元のアイテムは変更されない
+      expect(testItem.icon, null);
+    });
+
+    test('copyWith()メソッドがアイコンを削除できること', () {
+      // まずアイコン付きのアイテムを作成
+      final itemWithIcon = testItem.copyWith(icon: '🐿️');
+      expect(itemWithIcon.icon, '🐿️');
+
+      // アイコンを削除（nullに設定）
+      final itemWithoutIcon = itemWithIcon.copyWith(icon: null);
+      expect(itemWithoutIcon.icon, null);
+      expect(itemWithoutIcon.id, testItem.id);
+      expect(itemWithoutIcon.name, testItem.name);
+      expect(itemWithoutIcon.count, testItem.count);
+    });
+
+    test('copyWith()メソッドでアイコンパラメータを省略した場合、既存のアイコンを維持すること', () {
+      // まずアイコン付きのアイテムを作成
+      final itemWithIcon = testItem.copyWith(icon: '🐿️');
+      expect(itemWithIcon.icon, '🐿️');
+
+      // アイコンパラメータを省略してcopyWith
+      final updatedItem = itemWithIcon.copyWith(count: 10);
+      expect(updatedItem.icon, '🐿️'); // アイコンは維持される
+      expect(updatedItem.count, 10);
     });
 
     test('等価演算子が正しく動作すること', () {

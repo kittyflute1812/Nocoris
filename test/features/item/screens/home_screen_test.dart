@@ -51,8 +51,9 @@ void main() {
       // アイテムが表示されていることを確認
       expect(find.text('テストアイテム1'), findsOneWidget);
       expect(find.text('テストアイテム2'), findsOneWidget);
-      expect(find.text('残数: 5'), findsOneWidget);
-      expect(find.text('残数: 10'), findsOneWidget);
+      expect(find.text('のこり: '), findsNWidgets(2));
+      expect(find.text('5'), findsOneWidget);
+      expect(find.text('10'), findsOneWidget);
     });
 
     testWidgets('アイテムが空の場合、メッセージが表示される', (tester) async {

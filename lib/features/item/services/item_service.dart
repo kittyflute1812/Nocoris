@@ -35,8 +35,8 @@ class ItemService extends ChangeNotifier {
   }
 
   /// 新しいアイテムを作成
-  Future<Item> createItem(String name, int initialCount) async {
-    final item = Item.create(name: name, initialCount: initialCount);
+  Future<Item> createItem(String name, int initialCount, {String? icon}) async {
+    final item = Item.create(name: name, initialCount: initialCount, icon: icon);
     _items.add(item);
     await _saveItems();
     notifyListeners();
@@ -44,11 +44,15 @@ class ItemService extends ChangeNotifier {
   }
 
   /// アイテムのカウントを更新
-  Future<bool> updateItem(String id, int count) async {
+  Future<bool> updateItem(String id, int count, {String? icon}) async {
     final index = _items.indexWhere((item) => item.id == id);
     if (index == -1) return false;
 
-    _items[index] = _items[index].setCount(count);
+    _items[index] = _items[index].copyWith(
+      count: count,
+      icon: icon,
+      updatedAt: DateTime.now(),
+    );
     await _saveItems();
     notifyListeners();
     return true;
