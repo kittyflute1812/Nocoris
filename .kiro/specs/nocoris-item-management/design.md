@@ -4,6 +4,28 @@
 
 Nocoris（ノコリス）は、日用品やアイテムの残数を直感的に管理するFlutterアプリケーションです。本設計書では、承認された要件定義書に基づき、現在実装されているクリーンアーキテクチャとRiverpod状態管理を活用したシステム設計について説明します。
 
+### 実装状況（2025年1月現在）
+
+**✅ 完了済み機能（v1.0.0 - v1.1.0）**:
+- 基本アイテム管理（CRUD操作）
+- カウント機能（インクリメント・デクリメント）
+- Riverpod状態管理
+- 絵文字アイコン機能（emoji_picker_flutter使用）
+- データ永続化（shared_preferences）
+- UI実装（HomeScreen、ItemFormScreen、ItemCard）
+- 包括的テスト（49テスト、すべてパス）
+- プラットフォーム固有UI（iOS/macOS Cupertinoウィジェット対応）
+
+**🚧 開発中・予定機能**:
+- **アイテム名編集機能**（次のPRで実装予定）
+- デザインリニューアル（温かみのあるカラーテーマ）
+- iOSウィジェット（WidgetKit使用）
+- 型安全ナビゲーション（go_router）
+- カテゴリ・ソート・検索機能
+- 通知・履歴機能
+- 国際化対応
+- CI/CD環境構築
+
 ## アーキテクチャ
 
 ### 全体アーキテクチャ
@@ -32,13 +54,23 @@ Nocorisは4層のクリーンアーキテクチャを採用しています：
 
 ### 技術スタック
 
-- **フレームワーク**: Flutter 3.7.2+
+**現在の実装**:
+- **フレームワーク**: Flutter 3.29.3+
 - **状態管理**: Riverpod 2.6.1
 - **データ永続化**: shared_preferences 2.5.3
 - **ユニークID生成**: uuid 4.3.3
 - **ロギング**: logger 2.3.0
 - **絵文字選択**: emoji_picker_flutter 3.1.0
 - **テスト**: mocktail 1.0.3
+
+**将来の拡張予定**:
+- **ナビゲーション**: go_router（型安全なルーティング）
+- **アニメーション**: flutter_animate（UIアニメーション）
+- **ウィジェット**: WidgetKit（iOSホーム画面ウィジェット）
+- **国際化**: flutter_localizations（多言語対応）
+- **通知**: flutter_local_notifications（ローカル通知）
+- **CI/CD**: GitHub Actions（自動化パイプライン）
+- **データ管理**: iCloud同期（検討中）
 
 ## コンポーネントとインターフェース
 
@@ -108,14 +140,20 @@ final itemServiceProvider = Provider<ItemService>((ref) {
 - **責務**: アイテムのCRUD操作、カウント管理、データ永続化
 - **継承**: ChangeNotifier（状態変更通知）
 - **初期化**: ファクトリメソッドによる非同期初期化
+- **実装状況**: アイテム名編集機能は次のPRで実装予定
 
 **主要メソッド**:
 - `create()`: StorageService初期化とItemService作成
 - `createItem(name, count, icon)`: 新規アイテム作成
-- `updateItem(id, count, icon)`: アイテム更新
+- `updateItem(id, count, icon)`: アイテム更新（名前更新は次のPRで追加予定）
 - `deleteItem(id)`: アイテム削除
 - `incrementItem(id)`: カウント+1
 - `decrementItem(id)`: カウント-1
+
+**設計決定**: アイテム名編集機能の実装方針
+- 要件4.2で定義されているアイテム名編集機能は、現在の実装では未対応
+- 次のPRで`updateItem`メソッドにオプショナルな`name`パラメータを追加
+- 後方互換性を保持し、既存の呼び出しに影響を与えない設計
 
 #### StorageService
 - **責務**: shared_preferencesの抽象化、JSONシリアライゼーション
@@ -199,11 +237,18 @@ class Item {
 
 ### ビジネスルール
 
+**現在実装済み**:
 1. **カウント制約**: 常に0以上の値
 2. **ID生成**: UUID v4による自動生成
 3. **更新日時**: 変更時に自動更新
 4. **不変性**: すべてのフィールドがfinal
-5. **アイコン**: 絵文字文字列（オプション）
+5. **アイコン**: 絵文字文字列（オプション）✅
+
+**将来の拡張予定**:
+6. **カテゴリ制約**: アイテムは0個または1個のカテゴリに属する
+7. **閾値設定**: アイテムごとに通知閾値を設定可能
+8. **履歴記録**: すべてのカウント変更を履歴として記録
+9. **ソート順**: ユーザー定義のソート順を保持
 
 ### データフロー
 
@@ -369,3 +414,210 @@ ref.watch()使用Widget
 - ProviderScope でのオーバーライド
 - 本番コードを変更せずにテスト可能
 - 複数プロバイダーの同時オーバーライド対応
+
+## 将来の機能拡張設計
+
+### 重要な設計決定
+
+#### アイテム名編集機能の実装方針
+
+**現在の状況**: 要件4.2で定義されているアイテム名編集機能は、現在の実装では部分的に未対応
+- 編集画面でのアイテム名フィールドが無効化されている
+- `ItemService.updateItem`メソッドが名前の更新をサポートしていない
+
+**設計決定**: 段階的実装アプローチを採用
+1. **後方互換性の保持**: 既存のAPIを変更せず、オプショナルパラメータで拡張
+2. **段階的リリース**: 次のPRで実装し、既存機能への影響を最小化
+3. **テスト戦略**: 既存テストを維持しつつ、新機能のテストを追加
+
+**実装計画**:
+```dart
+// 拡張予定のメソッドシグネチャ
+Future<bool> updateItem(
+  String id, {
+  String? name,        // 新規追加（オプショナル）
+  int? count,
+  String? icon,
+}) async {
+  // 実装予定
+}
+```
+
+### Phase 2: デザインリニューアル（v1.1.0）
+
+#### カラーテーマシステム
+**温かみのあるカラーパレット**:
+- プライマリ: #8B6F47 (茶色 - リスの体色)
+- セカンダリ: #F5E6D3 (ベージュ - 温かみのある背景)
+- アクセント: #E8A87C (ライトオレンジ - アクション用)
+- エラー: #E89B9B (ピーチ/サーモンピンク - エラー表示)
+
+#### アニメーションシステム
+- ページ遷移アニメーション
+- マイクロインタラクション（タップフィードバック）
+- リスト項目の追加/削除アニメーション
+
+### Phase 3: アーキテクチャ改善（v1.2.0）
+
+#### 型安全ナビゲーション
+```dart
+// go_routerによる型安全なルーティング
+@TypedGoRoute<HomeRoute>(path: '/')
+class HomeRoute extends GoRouteData {
+  @override
+  Widget build(BuildContext context, GoRouterState state) => const HomeScreen();
+}
+
+@TypedGoRoute<ItemFormRoute>(path: '/item/form')
+class ItemFormRoute extends GoRouteData {
+  final String? itemId;
+  ItemFormRoute({this.itemId});
+}
+```
+
+### Phase 4: iOSウィジェット機能（v1.3.0）
+
+#### WidgetKit統合アーキテクチャ
+```
+Flutter App ←→ App Groups ←→ Widget Extension
+     ↓              ↓              ↓
+ItemService → Shared Storage → Timeline Provider
+```
+
+**データ共有戦略**:
+- App Groupsによるコンテナ共有
+- JSONベースのデータ交換
+- Timeline Providerによる更新管理
+
+### Phase 5: 機能拡張（v1.4.0）
+
+#### カテゴリシステム設計
+```dart
+class Category {
+  final String id;
+  final String name;
+  final String color;
+  final String? icon;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+}
+
+class Item {
+  // 既存フィールド...
+  final String? categoryId; // カテゴリとの関連付け
+}
+```
+
+#### 検索・ソート機能
+- インクリメンタルサーチ
+- 複数条件でのソート
+- フィルタリング機能
+
+### Phase 6: 高度な機能（v2.0.0）
+
+#### 通知システム
+```dart
+class NotificationThreshold {
+  final String itemId;
+  final int threshold;
+  final bool enabled;
+  final NotificationType type;
+}
+
+enum NotificationType {
+  lowStock,    // 在庫少
+  outOfStock,  // 在庫切れ
+  custom,      // カスタム
+}
+```
+
+#### 履歴システム
+```dart
+class ItemHistory {
+  final String id;
+  final String itemId;
+  final int previousCount;
+  final int newCount;
+  final HistoryAction action;
+  final DateTime timestamp;
+}
+
+enum HistoryAction {
+  increment,   // 増加
+  decrement,   // 減少
+  setCount,    // 直接設定
+  created,     // 作成
+  deleted,     // 削除
+}
+```
+
+#### データ管理機能
+```dart
+class DataManager {
+  // JSONエクスポート/インポート
+  Future<String> exportToJson() async;
+  Future<void> importFromJson(String jsonData) async;
+  
+  // iCloud同期（検討中）
+  Future<void> syncWithiCloud() async;
+  
+  // データ整合性チェック
+  Future<bool> validateDataIntegrity() async;
+}
+```
+
+### Phase 7: 国際化・アクセシビリティ（v2.1.0）
+
+#### 多言語対応
+```dart
+// flutter_localizationsによる国際化対応
+class AppLocalizations {
+  static const supportedLocales = [
+    Locale('ja', 'JP'), // 日本語
+    Locale('en', 'US'), // 英語
+  ];
+  
+  // 動的言語切り替え
+  static void changeLocale(BuildContext context, Locale locale) {
+    // 実装予定
+  }
+}
+```
+
+#### アクセシビリティ向上
+- セマンティックラベルの充実
+- スクリーンリーダー対応
+- 動的フォントサイズ調整
+- 適切なコントラスト比の維持
+- キーボードナビゲーション対応
+
+### Phase 8: CI/CD環境構築（v1.2.0）
+
+#### GitHub Actions統合
+```yaml
+# .github/workflows/ci.yml
+name: CI/CD Pipeline
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+      - run: flutter test
+      - run: flutter analyze
+  
+  deploy:
+    needs: test
+    runs-on: macos-latest
+    steps:
+      - name: Deploy to TestFlight
+        # 実装予定
+```
+
+#### 自動化機能
+- 自動テスト実行
+- 自動リンティング・フォーマットチェック
+- TestFlightへの自動デプロイ
+- カバレッジレポートの自動生成
+- 自動バージョン管理
