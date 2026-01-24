@@ -92,7 +92,7 @@ class AppColors {
   /// カラーに透明度を適用
   static Color withAlpha(Color color, int alpha) {
     assert(alpha >= 0 && alpha <= 255, 'Alpha must be between 0 and 255');
-    return color.withValues(alpha: alpha / 255.0);
+    return color.withAlpha(alpha);
   }
 }
 
