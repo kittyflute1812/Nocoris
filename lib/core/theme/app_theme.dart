@@ -171,7 +171,7 @@ class AppTheme {
         ),
         
         // Dialog テーマ
-        dialogTheme: DialogTheme(
+        dialogTheme: DialogThemeData(
           backgroundColor: AppColors.surface,
           surfaceTintColor: Colors.transparent,
           elevation: 8,
