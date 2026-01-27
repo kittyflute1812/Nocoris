@@ -42,7 +42,7 @@ void main() {
         },
         generator1: PropertyTestHelpers.generateValidItemName,
         generator2: PropertyTestHelpers.generateValidCount,
-        generator3: PropertyTestHelpers.generateEmojiIcon,
+        generator3: () => PropertyTestHelpers.generateEmojiIcon(),
       );
 
       // プロパティ 2: 無効入力の拒否
@@ -191,13 +191,13 @@ void main() {
     PropertyTestFramework.runPropertyGroup('無効入力の詳細テスト', () {
       // プロパティ 2の拡張: 様々な無効入力パターンのテスト
       test('Property 2: 空文字列や空白文字のみの名前は拒否される', () {
-        final whitespaceNames = ['',' ', '  ', '\t', '\n', '   \t  \n  '];
+        final invalidNames = ['', ' ', '  ', '\t', '\n', '   \t  \n  '];
         
-        for (final name in whitespaceNames) {
+        for (final name in invalidNames) {
           expect(
             () => Item.create(name: name, initialCount: 0, icon: null),
             throwsA(isA<ArgumentError>()),
-            reason: 'Whitespace-only name "$name" should be rejected',
+            reason: 'Invalid name "$name" should be rejected',
           );
         }
       });
