@@ -1,0 +1,67 @@
+# Dart Test Configuration for Nocoris Property-Based Tests
+
+# テストタグの定義
+tags:
+  property-based-test:
+    description: "プロパティベーステスト"
+    timeout: 10m
+  
+  unit-test:
+    description: "単体テスト"
+    timeout: 30s
+  
+  widget-test:
+    description: "ウィジェットテスト"
+    timeout: 1m
+  
+  integration-test:
+    description: "統合テスト"
+    timeout: 5m
+
+  nocoris-item-management:
+    description: "Nocorisアイテム管理機能"
+    timeout: 5m
+
+  # プロパティ別タグ
+  property-1:
+    description: "プロパティ1: アイテム作成によるリスト拡張"
+  property-2:
+    description: "プロパティ2: 無効入力の拒否"
+  property-3:
+    description: "プロパティ3: アイコン設定の一貫性"
+  property-4:
+    description: "プロパティ4: 数量設定の正確性"
+  property-5:
+    description: "プロパティ5: アイテム表示の完全性"
+  property-6:
+    description: "プロパティ6: インクリメント操作の正確性"
+  property-7:
+    description: "プロパティ7: デクリメント操作の正確性"
+  property-8:
+    description: "プロパティ8: 編集フォーム情報の一致"
+  property-9:
+    description: "プロパティ9: アイテム更新の反映"
+  property-10:
+    description: "プロパティ10: アイテム削除の完全性"
+  property-11:
+    description: "プロパティ11: データ永続化のラウンドトリップ"
+  property-12:
+    description: "プロパティ12: エラー処理の堅牢性"
+
+# デフォルト設定
+timeout: 30s
+concurrency: 4
+
+# プラットフォーム固有の設定
+platforms:
+  - vm
+  - chrome
+
+# テストの並列実行設定
+reporter: expanded
+
+# プロパティベーステスト用の特別な設定
+override_platforms:
+  property-based-test:
+    timeout: 10m
+    concurrency: 2  # プロパティテストは重いので並列度を下げる
