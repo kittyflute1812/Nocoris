@@ -122,4 +122,22 @@ class PropertyTestHelpers {
     final listSize = count ?? _random.nextInt(20) + 1;
     return List.generate(listSize, (_) => generateRandomItem());
   }
+
+  /// アイテム名が有効かどうかを判定する
+  static bool isValidItemName(String name) {
+    if (name.isEmpty) return false;
+    if (name.trim().isEmpty) return false;
+    if (name.length > 100) return false; // AppConstants.maxNameLength
+    return true;
+  }
+
+  /// 数量が有効かどうかを判定する
+  static bool isValidCount(int count) {
+    return count >= 0; // AppConstants.minCount
+  }
+
+  /// 有効な数量を生成する
+  static int generateValidCount() {
+    return _random.nextInt(1000); // 0-999の範囲で有効な数量
+  }
 }

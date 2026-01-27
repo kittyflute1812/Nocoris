@@ -69,4 +69,87 @@ class PropertyTestFramework {
     debugPrint('Success rate: ${(passed / iterations * 100).toStringAsFixed(1)}%');
     debugPrint('--------------------------------\n');
   }
+
+  /// 単一パラメータのプロパティテストを実行する
+  static void runProperty<T>(
+    {required int propertyNumber,
+    required bool Function(T) property,
+    required T Function() generator,
+    int? iterations}) {
+    
+    validatePropertyTest(
+      propertyNumber: propertyNumber,
+      property: property,
+      generator: generator,
+    );
+
+    final testIterations = iterations ?? 100;
+    
+    test('Property $propertyNumber test', () {
+      int passed = 0;
+      int failed = 0;
+      
+      for (int i = 0; i < testIterations; i++) {
+        final input = generator();
+        final result = property(input);
+        
+        if (result) {
+          passed++;
+        } else {
+          failed++;
+        }
+      }
+      
+      printPropertyStatistics('Property $propertyNumber', testIterations, passed, failed);
+      
+      if (failed > 0) {
+        fail('Property $propertyNumber failed $failed/$testIterations times');
+      }
+    });
+  }
+
+  /// 2つのパラメータのプロパティテストを実行する
+  static void runProperty2<T1, T2>(
+    {required int propertyNumber,
+    required bool Function(T1, T2) property,
+    required T1 Function() generator1,
+    required T2 Function() generator2,
+    int? iterations}) {
+    
+    final testIterations = iterations ?? 100;
+    
+    test('Property $propertyNumber test (2 params)', () {
+      int passed = 0;
+      int failed = 0;
+      
+      for (int i = 0; i < testIterations; i++) {
+        final input1 = generator1();
+        final input2 = generator2();
+        final result = property(input1, input2);
+        
+        if (result) {
+          passed++;
+        } else {
+          failed++;
+        }
+      }
+      
+      printPropertyStatistics('Property $propertyNumber', testIterations, passed, failed);
+      
+      if (failed > 0) {
+        fail('Property $propertyNumber failed $failed/$testIterations times');
+      }
+    });
+  }
+
+  /// プロパティテストのバリデーションを行う
+  static void validatePropertyTest<T>({
+    required int propertyNumber,
+    required bool Function(T) property,
+    required T Function() generator,
+  }) {
+    if (propertyNumber < 1 || propertyNumber > 12) {
+      throw ArgumentError('Property number must be between 1 and 12, got: $propertyNumber');
+    }
+  }
 }

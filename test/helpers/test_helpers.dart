@@ -3,6 +3,11 @@ import 'package:mocktail/mocktail.dart';
 import 'package:nocoris/features/item/services/item_service.dart';
 import 'package:nocoris/core/services/storage_service.dart';
 
+// プロパティテスト用のヘルパーをエクスポート
+export 'property_test_helpers.dart';
+export 'property_test_config.dart';
+export 'property_test_framework.dart';
+
 /// テストヘルパー関数をまとめたクラス
 class TestHelpers {
   /// テスト用にウィジェットをラップする
