@@ -140,4 +140,9 @@ class PropertyTestHelpers {
   static int generateValidCount() {
     return _random.nextInt(1000); // 0-999の範囲で有効な数量
   }
+
+  /// 絵文字アイコンを生成する
+  static String generateEmojiIcon() {
+    return _generateRandomEmoji();
+  }
 }

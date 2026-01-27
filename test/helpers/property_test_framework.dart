@@ -142,6 +142,42 @@ class PropertyTestFramework {
     });
   }
 
+  /// 3つのパラメータのプロパティテストを実行する
+  static void runProperty3<T1, T2, T3>(
+    {required int propertyNumber,
+    required bool Function(T1, T2, T3) property,
+    required T1 Function() generator1,
+    required T2 Function() generator2,
+    required T3 Function() generator3,
+    int? iterations}) {
+    
+    final testIterations = iterations ?? 100;
+    
+    test('Property $propertyNumber test (3 params)', () {
+      int passed = 0;
+      int failed = 0;
+      
+      for (int i = 0; i < testIterations; i++) {
+        final input1 = generator1();
+        final input2 = generator2();
+        final input3 = generator3();
+        final result = property(input1, input2, input3);
+        
+        if (result) {
+          passed++;
+        } else {
+          failed++;
+        }
+      }
+      
+      printPropertyStatistics('Property $propertyNumber', testIterations, passed, failed);
+      
+      if (failed > 0) {
+        fail('Property $propertyNumber failed $failed/$testIterations times');
+      }
+    });
+  }
+
   /// プロパティテストのバリデーションを行う
   static void validatePropertyTest<T>({
     required int propertyNumber,
