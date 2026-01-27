@@ -133,11 +133,8 @@ class Item {
     String? icon,
   }) {
     // 名前の検証
-    if (name.isEmpty) {
-      throw ArgumentError('Item name cannot be empty');
-    }
     if (name.trim().isEmpty) {
-      throw ArgumentError('Item name cannot be whitespace only');
+      throw ArgumentError('Item name cannot be empty or only whitespace');
     }
     
     // 数量の検証
@@ -177,11 +174,8 @@ class Item {
 
   /// 名前のバリデーションを行う
   static void _validateName(String name) {
-    if (name.isEmpty) {
-      throw ArgumentError('Item name cannot be empty');
-    }
     if (name.trim().isEmpty) {
-      throw ArgumentError('Item name cannot be only whitespace');
+      throw ArgumentError('Item name cannot be empty or only whitespace');
     }
     if (name.length > AppConstants.maxNameLength) {
       throw ArgumentError('Item name cannot exceed ${AppConstants.maxNameLength} characters');
@@ -191,7 +185,7 @@ class Item {
   /// 既存データの名前をサニタイズする（後方互換性のため）
   static String _sanitizeName(String name) {
     // 空文字列または空白のみの場合はデフォルト名を使用
-    if (name.isEmpty || name.trim().isEmpty) {
+    if (name.trim().isEmpty) {
       return '無名のアイテム';
     }
     
