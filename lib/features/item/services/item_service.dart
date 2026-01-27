@@ -12,6 +12,9 @@ class ItemService extends ChangeNotifier {
   final StorageService _storage;
   List<Item> _items = [];
 
+  /// updateItemメソッドで「アイコンが提供されなかった」ことを示すセンチネル値
+  static const Object _iconSentinel = Object();
+
   ItemService(this._storage) {
     _loadItems();
   }
@@ -36,6 +39,7 @@ class ItemService extends ChangeNotifier {
 
   /// 新しいアイテムを作成
   Future<Item> createItem(String name, int initialCount, {String? icon}) async {
+    // 名前のバリデーションはItemコンストラクタで行われる
     final item = Item.create(name: name, initialCount: initialCount, icon: icon);
     _items.add(item);
     await _saveItems();
@@ -44,13 +48,27 @@ class ItemService extends ChangeNotifier {
   }
 
   /// アイテムのカウントを更新
-  Future<bool> updateItem(String id, int count, {String? icon}) async {
+  Future<bool> updateItem(String id, int count, {String? name, Object? icon = _iconSentinel}) async {
     final index = _items.indexWhere((item) => item.id == id);
     if (index == -1) return false;
 
+    // 名前が提供された場合はバリデーションを行う
+    if (name != null) {
+      if (name.isEmpty) {
+        throw ArgumentError('Item name cannot be empty');
+      }
+      if (name.trim().isEmpty) {
+        throw ArgumentError('Item name cannot be only whitespace');
+      }
+      if (name.length > 100) { // AppConstants.maxNameLength
+        throw ArgumentError('Item name cannot exceed 100 characters');
+      }
+    }
+
     _items[index] = _items[index].copyWith(
+      name: name,
       count: count,
-      icon: icon,
+      icon: identical(icon, _iconSentinel) ? _items[index].icon : icon as String?,
       updatedAt: DateTime.now(),
     );
     await _saveItems();

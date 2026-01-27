@@ -88,9 +88,11 @@ class _ItemFormScreenState extends ConsumerState<ItemFormScreen> {
 
   /// 既存アイテムを更新
   Future<bool> _updateItem(itemService, int count) async {
+    final name = _nameController.text;
     final success = await itemService.updateItem(
       widget.item!.id,
       count,
+      name: name,
       icon: _selectedIcon,
     );
     if (!success && mounted) {
@@ -178,7 +180,7 @@ class _ItemForm extends StatelessWidget {
           const SizedBox(height: AppConstants.defaultPadding),
           _ItemNameField(
             controller: nameController,
-            enabled: !isEditMode,
+            enabled: true,
           ),
           const SizedBox(height: AppConstants.defaultPadding),
           _ItemCountField(
@@ -285,6 +287,9 @@ class _ItemNameField extends StatelessWidget {
       ),
       validator: (value) {
         if (value == null || value.isEmpty) {
+          return AppStrings.itemNameRequired;
+        }
+        if (value.trim().isEmpty) {
           return AppStrings.itemNameRequired;
         }
         return null;
