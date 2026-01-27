@@ -6,9 +6,10 @@ Nocoris（ノコリス）は、日用品やアイテムの残数を直感的に�
 
 ### 実装状況（2025年1月現在）
 
-**✅ 完了済み機能（v1.0.0 - v1.1.0）**:
+**✅ 完了済み機能（v1.0.0 - v1.1.1）**:
 - 基本アイテム管理（CRUD操作）
 - カウント機能（インクリメント・デクリメント）
+- **アイテム名編集機能**（v1.1.1で完了）
 - Riverpod状態管理
 - 絵文字アイコン機能（emoji_picker_flutter使用）
 - データ永続化（shared_preferences）
@@ -17,7 +18,6 @@ Nocoris（ノコリス）は、日用品やアイテムの残数を直感的に�
 - プラットフォーム固有UI（iOS/macOS Cupertinoウィジェット対応）
 
 **🚧 開発中・予定機能**:
-- **アイテム名編集機能**（次のPRで実装予定）
 - デザインリニューアル（温かみのあるカラーテーマ）
 - iOSウィジェット（WidgetKit使用）
 - 型安全ナビゲーション（go_router）
@@ -140,20 +140,21 @@ final itemServiceProvider = Provider<ItemService>((ref) {
 - **責務**: アイテムのCRUD操作、カウント管理、データ永続化
 - **継承**: ChangeNotifier（状態変更通知）
 - **初期化**: ファクトリメソッドによる非同期初期化
-- **実装状況**: アイテム名編集機能は次のPRで実装予定
+- **実装状況**: アイテム名編集機能は v1.1.1 で完了済み
 
 **主要メソッド**:
 - `create()`: StorageService初期化とItemService作成
 - `createItem(name, count, icon)`: 新規アイテム作成
-- `updateItem(id, count, icon)`: アイテム更新（名前更新は次のPRで追加予定）
+- `updateItem(id, name, count, icon)`: アイテム更新（名前更新を含む完全実装済み）
 - `deleteItem(id)`: アイテム削除
 - `incrementItem(id)`: カウント+1
 - `decrementItem(id)`: カウント-1
 
-**設計決定**: アイテム名編集機能の実装方針
-- 要件4.2で定義されているアイテム名編集機能は、現在の実装では未対応
-- 次のPRで`updateItem`メソッドにオプショナルな`name`パラメータを追加
-- 後方互換性を保持し、既存の呼び出しに影響を与えない設計
+**設計決定**: アイテム名編集機能の実装完了
+- 要件4.2で定義されているアイテム名編集機能は v1.1.1 で完全実装済み
+- `updateItem`メソッドにオプショナルな`name`パラメータを追加完了
+- 後方互換性を保持し、既存の呼び出しに影響を与えない設計を実現
+- 編集画面での名前フィールドが有効化され、完全に機能している
 
 #### StorageService
 - **責務**: shared_preferencesの抽象化、JSONシリアライゼーション
@@ -419,47 +420,56 @@ ref.watch()使用Widget
 
 ### 重要な設計決定
 
-#### アイテム名編集機能の実装方針
+#### アイテム名編集機能の実装完了（v1.1.1）
 
-**現在の状況**: 要件4.2で定義されているアイテム名編集機能は、現在の実装では部分的に未対応
-- 編集画面でのアイテム名フィールドが無効化されている
-- `ItemService.updateItem`メソッドが名前の更新をサポートしていない
+**実装完了状況**: 要件4.2で定義されているアイテム名編集機能は v1.1.1 で完全実装済み
 
-**設計決定**: 段階的実装アプローチを採用
-1. **後方互換性の保持**: 既存のAPIを変更せず、オプショナルパラメータで拡張
-2. **段階的リリース**: 次のPRで実装し、既存機能への影響を最小化
-3. **テスト戦略**: 既存テストを維持しつつ、新機能のテストを追加
+**完了した実装内容**:
+1. **ItemService.updateItem メソッドの拡張完了**: オプショナルな`name`パラメータを追加し、完全に機能
+2. **UI の完全対応**: 編集画面でのアイテム名フィールドが有効化され、名前変更が可能
+3. **後方互換性の確保**: 既存のAPIを変更せず、オプショナルパラメータで拡張
+4. **包括的テスト**: 名前編集機能に関するテストが実装済み
 
-**実装計画**:
+**実装済みメソッドシグネチャ**:
 ```dart
-// 拡張予定のメソッドシグネチャ
+// 完了済みのメソッドシグネチャ
 Future<bool> updateItem(
   String id, {
-  String? name,        // 新規追加（オプショナル）
+  String? name,        // 実装完了（オプショナル）
   int? count,
   String? icon,
 }) async {
-  // 実装予定
+  // 実装完了
 }
 ```
 
-### Phase 2: デザインリニューアル（v1.1.0）
+**設計上の利点**:
+- 段階的実装により既存機能への影響を最小化
+- オプショナルパラメータにより後方互換性を完全保持
+- 型安全性を保ちながら柔軟な更新操作を実現
+
+### Phase 2: デザインリニューアル（v1.2.0）
 
 #### カラーテーマシステム
-**温かみのあるカラーパレット**:
+**温かみのあるカラーパレット**（要件9に基づく）:
 - プライマリ: #8B6F47 (茶色 - リスの体色)
 - セカンダリ: #F5E6D3 (ベージュ - 温かみのある背景)
 - アクセント: #E8A87C (ライトオレンジ - アクション用)
 - エラー: #E89B9B (ピーチ/サーモンピンク - エラー表示)
 
-#### アニメーションシステム
+#### アニメーションシステム（要件9に基づく）
 - ページ遷移アニメーション
-- マイクロインタラクション（タップフィードバック）
+- マイクロインタラクション（タップフィードバック、ホバー効果）
 - リスト項目の追加/削除アニメーション
+- ボタンやカードの操作時の適切なアニメーション効果
 
-### Phase 3: アーキテクチャ改善（v1.2.0）
+#### 空状態の改善（要件9に基づく）
+- リスのマスコットキャラクターと共に空状態を表示
+- より親しみやすく楽しい体験の提供
 
-#### 型安全ナビゲーション
+### Phase 3: アーキテクチャ改善（v1.3.0）
+
+#### 型安全ナビゲーション（要件11に基づく）
 ```dart
 // go_routerによる型安全なルーティング
 @TypedGoRoute<HomeRoute>(path: '/')
@@ -475,125 +485,7 @@ class ItemFormRoute extends GoRouteData {
 }
 ```
 
-### Phase 4: iOSウィジェット機能（v1.3.0）
-
-#### WidgetKit統合アーキテクチャ
-```
-Flutter App ←→ App Groups ←→ Widget Extension
-     ↓              ↓              ↓
-ItemService → Shared Storage → Timeline Provider
-```
-
-**データ共有戦略**:
-- App Groupsによるコンテナ共有
-- JSONベースのデータ交換
-- Timeline Providerによる更新管理
-
-### Phase 5: 機能拡張（v1.4.0）
-
-#### カテゴリシステム設計
-```dart
-class Category {
-  final String id;
-  final String name;
-  final String color;
-  final String? icon;
-  final DateTime createdAt;
-  final DateTime updatedAt;
-}
-
-class Item {
-  // 既存フィールド...
-  final String? categoryId; // カテゴリとの関連付け
-}
-```
-
-#### 検索・ソート機能
-- インクリメンタルサーチ
-- 複数条件でのソート
-- フィルタリング機能
-
-### Phase 6: 高度な機能（v2.0.0）
-
-#### 通知システム
-```dart
-class NotificationThreshold {
-  final String itemId;
-  final int threshold;
-  final bool enabled;
-  final NotificationType type;
-}
-
-enum NotificationType {
-  lowStock,    // 在庫少
-  outOfStock,  // 在庫切れ
-  custom,      // カスタム
-}
-```
-
-#### 履歴システム
-```dart
-class ItemHistory {
-  final String id;
-  final String itemId;
-  final int previousCount;
-  final int newCount;
-  final HistoryAction action;
-  final DateTime timestamp;
-}
-
-enum HistoryAction {
-  increment,   // 増加
-  decrement,   // 減少
-  setCount,    // 直接設定
-  created,     // 作成
-  deleted,     // 削除
-}
-```
-
-#### データ管理機能
-```dart
-class DataManager {
-  // JSONエクスポート/インポート
-  Future<String> exportToJson() async;
-  Future<void> importFromJson(String jsonData) async;
-  
-  // iCloud同期（検討中）
-  Future<void> syncWithiCloud() async;
-  
-  // データ整合性チェック
-  Future<bool> validateDataIntegrity() async;
-}
-```
-
-### Phase 7: 国際化・アクセシビリティ（v2.1.0）
-
-#### 多言語対応
-```dart
-// flutter_localizationsによる国際化対応
-class AppLocalizations {
-  static const supportedLocales = [
-    Locale('ja', 'JP'), // 日本語
-    Locale('en', 'US'), // 英語
-  ];
-  
-  // 動的言語切り替え
-  static void changeLocale(BuildContext context, Locale locale) {
-    // 実装予定
-  }
-}
-```
-
-#### アクセシビリティ向上
-- セマンティックラベルの充実
-- スクリーンリーダー対応
-- 動的フォントサイズ調整
-- 適切なコントラスト比の維持
-- キーボードナビゲーション対応
-
-### Phase 8: CI/CD環境構築（v1.2.0）
-
-#### GitHub Actions統合
+#### CI/CD環境構築（要件19に基づく）
 ```yaml
 # .github/workflows/ci.yml
 name: CI/CD Pipeline
@@ -615,9 +507,173 @@ jobs:
         # 実装予定
 ```
 
-#### 自動化機能
+**自動化機能**:
 - 自動テスト実行
 - 自動リンティング・フォーマットチェック
 - TestFlightへの自動デプロイ
 - カバレッジレポートの自動生成
 - 自動バージョン管理
+
+### Phase 4: iOSウィジェット機能（v1.4.0）
+
+#### WidgetKit統合アーキテクチャ（要件10に基づく）
+```
+Flutter App ←→ App Groups ←→ Widget Extension
+     ↓              ↓              ↓
+ItemService → Shared Storage → Timeline Provider
+```
+
+**データ共有戦略**:
+- App Groupsによるコンテナ共有
+- JSONベースのデータ交換
+- Timeline Providerによる更新管理
+
+**ウィジェット機能**（要件10の受け入れ基準に基づく）:
+- iOSホーム画面ウィジェット配置機能
+- 選択したアイテムの名前と数量表示
+- ウィジェットからの数量減算機能
+- 小・中・大サイズのウィジェットレイアウト
+- ロック画面ウィジェット対応（iOS 16+）
+
+### Phase 5: 機能拡張（v1.5.0）
+
+#### カテゴリシステム設計（要件12に基づく）
+```dart
+class Category {
+  final String id;
+  final String name;
+  final String color;
+  final String? icon;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+}
+
+class Item {
+  // 既存フィールド...
+  final String? categoryId; // カテゴリとの関連付け
+}
+```
+
+**カテゴリ機能**（要件12の受け入れ基準に基づく）:
+- カテゴリ作成・保存機能
+- アイテムとカテゴリの関連付け
+- カテゴリフィルター表示
+- カテゴリごとの色分け表示
+
+#### 検索・ソート機能（要件13に基づく）
+**ソート機能**:
+- 名前順（昇順・降順）
+- 作成日時順（新しい順・古い順）
+- 更新日時順（新しい順・古い順）
+- カウント数順（多い順・少ない順）
+- ソート設定の永続化
+
+**検索機能**:
+- 名前による検索
+- インクリメンタルサーチ（リアルタイム検索）
+- フィルタリング機能
+
+### Phase 6: 高度な機能（v2.0.0）
+
+#### 通知システム（要件14に基づく）
+```dart
+class NotificationThreshold {
+  final String itemId;
+  final int threshold;
+  final bool enabled;
+  final NotificationType type;
+}
+
+enum NotificationType {
+  lowStock,    // 在庫少
+  outOfStock,  // 在庫切れ
+  custom,      // カスタム
+}
+```
+
+**通知機能**（要件14の受け入れ基準に基づく）:
+- アイテムごとの通知閾値設定
+- 閾値以下での自動ローカル通知送信
+- 通知設定画面での個別設定・編集
+- 通知の有効/無効個別設定
+
+#### 履歴システム（要件15に基づく）
+```dart
+class ItemHistory {
+  final String id;
+  final String itemId;
+  final int previousCount;
+  final int newCount;
+  final HistoryAction action;
+  final DateTime timestamp;
+}
+
+enum HistoryAction {
+  increment,   // 増加
+  decrement,   // 減少
+  setCount,    // 直接設定
+  created,     // 作成
+  deleted,     // 削除
+}
+```
+
+**履歴機能**（要件15の受け入れ基準に基づく）:
+- 数量変更履歴の自動記録
+- アイテムごとの変更履歴表示
+- 使用パターンのグラフ表示
+- 日別・週別・月別の統計情報
+
+#### データ管理機能（要件16に基づく）
+```dart
+class DataManager {
+  // JSONエクスポート/インポート
+  Future<String> exportToJson() async;
+  Future<void> importFromJson(String jsonData) async;
+  
+  // iCloud同期（検討中）
+  Future<void> syncWithiCloud() async;
+  
+  // データ整合性チェック
+  Future<bool> validateDataIntegrity() async;
+}
+```
+
+**データ管理機能**（要件16の受け入れ基準に基づく）:
+- 全データのJSON形式エクスポート
+- JSON形式データのインポート
+- iCloud同期機能（検討中）
+- データ整合性チェック機能
+
+### Phase 7: 国際化・アクセシビリティ（v2.1.0）
+
+#### 多言語対応（要件17に基づく）
+```dart
+// flutter_localizationsによる国際化対応
+class AppLocalizations {
+  static const supportedLocales = [
+    Locale('ja', 'JP'), // 日本語
+    Locale('en', 'US'), // 英語
+  ];
+  
+  // 動的言語切り替え
+  static void changeLocale(BuildContext context, Locale locale) {
+    // 実装予定
+  }
+}
+```
+
+**国際化機能**（要件17の受け入れ基準に基づく）:
+- flutter_localizationsを使用した多言語対応
+- 日本語・英語の言語リソース提供
+- 動的言語切り替え機能
+- 日付・数値のローカライゼーション
+- 右から左への言語（RTL）対応
+
+#### アクセシビリティ向上（要件18に基づく）
+**アクセシビリティ機能**（要件18の受け入れ基準に基づく）:
+- スクリーンリーダー対応
+- 適切なセマンティックラベルの全ウィジェット設定
+- 動的フォントサイズ調整対応
+- 適切なコントラスト比の維持
+- キーボードナビゲーション対応
+
