@@ -23,6 +23,17 @@ class Item {
     _validateName(name);
   }
 
+  /// 内部用コンストラクタ（バリデーションをスキップ）
+  /// デシリアライゼーション時の後方互換性のために使用
+  Item._internal({
+    required this.id,
+    required this.name,
+    required this.count,
+    this.icon,
+    required this.createdAt,
+    required this.updatedAt,
+  }) : assert(count >= 0, 'Count must be non-negative');
+
   /// カウントを1減らした新しいインスタンスを返す
   Item decrement() {
     if (count <= 0) return this;
@@ -55,6 +66,8 @@ class Item {
   /// - パラメータが提供されない場合：既存のアイコンを維持
   /// - パラメータにnullが渡された場合：アイコンを削除（nullに設定）
   /// - パラメータに値が渡された場合：新しいアイコンに更新
+  /// 
+  /// 注意：nameが変更される場合は新しい値に対してバリデーションが実行されます
   Item copyWith({
     String? id,
     String? name,
@@ -63,7 +76,12 @@ class Item {
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
-    return Item(
+    // 名前が変更される場合は新しい値をバリデーション
+    if (name != null) {
+      _validateName(name);
+    }
+    
+    return Item._internal(
       id: id ?? this.id,
       name: name ?? this.name,
       count: count ?? this.count,
@@ -77,10 +95,18 @@ class Item {
   static const Object _sentinel = Object();
 
   /// JSONからItemインスタンスを作成
+  /// 
+  /// 後方互換性のため、不正な名前を持つ既存データを自動的にサニタイズします：
+  /// - 空文字列 → "無名のアイテム"
+  /// - 空白のみ → "無名のアイテム"  
+  /// - 長すぎる名前 → 最大長に切り詰め
   factory Item.fromJson(Map<String, dynamic> json) {
-    return Item(
+    String rawName = json['name'] as String;
+    String sanitizedName = _sanitizeName(rawName);
+    
+    return Item._internal(
       id: json['id'] as String,
-      name: json['name'] as String,
+      name: sanitizedName,
       count: json['count'] as int,
       icon: json['icon'] as String?,
       createdAt: DateTime.parse(json['createdAt'] as String),
@@ -160,5 +186,20 @@ class Item {
     if (name.length > AppConstants.maxNameLength) {
       throw ArgumentError('Item name cannot exceed ${AppConstants.maxNameLength} characters');
     }
+  }
+
+  /// 既存データの名前をサニタイズする（後方互換性のため）
+  static String _sanitizeName(String name) {
+    // 空文字列または空白のみの場合はデフォルト名を使用
+    if (name.isEmpty || name.trim().isEmpty) {
+      return '無名のアイテム';
+    }
+    
+    // 長すぎる場合は切り詰める
+    if (name.length > AppConstants.maxNameLength) {
+      return name.substring(0, AppConstants.maxNameLength);
+    }
+    
+    return name;
   }
 }
