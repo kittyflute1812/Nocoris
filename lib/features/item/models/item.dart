@@ -1,4 +1,5 @@
 import 'package:uuid/uuid.dart';
+import '../../../core/constants/app_constants.dart';
 
 /// アイテムのデータモデル
 /// 
@@ -18,7 +19,9 @@ class Item {
     this.icon,
     required this.createdAt,
     required this.updatedAt,
-  }) : assert(count >= 0, 'Count must be non-negative');
+  }) : assert(count >= 0, 'Count must be non-negative') {
+    _validateName(name);
+  }
 
   /// カウントを1減らした新しいインスタンスを返す
   Item decrement() {
@@ -131,5 +134,18 @@ class Item {
   @override
   String toString() {
     return 'Item(id: $id, name: $name, count: $count, icon: $icon, createdAt: $createdAt, updatedAt: $updatedAt)';
+  }
+
+  /// 名前のバリデーションを行う
+  static void _validateName(String name) {
+    if (name.isEmpty) {
+      throw ArgumentError('Item name cannot be empty');
+    }
+    if (name.trim().isEmpty) {
+      throw ArgumentError('Item name cannot be only whitespace');
+    }
+    if (name.length > AppConstants.maxNameLength) {
+      throw ArgumentError('Item name cannot exceed ${AppConstants.maxNameLength} characters');
+    }
   }
 }
