@@ -34,53 +34,30 @@ void main() {
         debugPrint('検証対象: 要件 3.1');
         debugPrint('反復回数: 100');
         
-        int passedCount = 0;
-        int failedCount = 0;
-        
         for (int i = 0; i < 100; i++) {
           final mockStorage = MockStorageService();
           when(() => mockStorage.loadItems()).thenReturn([]);
           when(() => mockStorage.saveItems(any())).thenAnswer((_) async => true);
           final itemService = ItemService(mockStorage);
           
-          try {
-            final testItem = PropertyTestHelpers.generateRandomItem();
-            
-            // テスト用のアイテムをサービスに追加
-            await itemService.createItem(testItem.name, testItem.count, icon: testItem.icon);
-            final createdItem = itemService.items.first;
-            final initialCount = createdItem.count;
-            
-            // インクリメント操作を実行
-            final success = await itemService.incrementItem(createdItem.id);
-            
-            if (!success) {
-              failedCount++;
-              fail('Property 6 failed on iteration ${i + 1}: increment operation returned false');
-            }
-            
-            // プロパティ検証: アイテムの数量が正確に1増加している
-            final updatedItem = itemService.getItemById(createdItem.id);
-            if (updatedItem == null) {
-              failedCount++;
-              fail('Property 6 failed on iteration ${i + 1}: item not found after increment');
-            }
-            
-            if (updatedItem.count != initialCount + 1) {
-              failedCount++;
-              PropertyTestHelpers.debugPrintTestData(testItem);
-              fail('Property 6 failed on iteration ${i + 1}: expected count ${initialCount + 1}, got ${updatedItem.count}');
-            }
-            
-            passedCount++;
-          } catch (e) {
-            failedCount++;
-            debugPrint('Exception on iteration ${i + 1}: $e');
-            rethrow;
-          }
+          final testItem = PropertyTestHelpers.generateRandomItem();
+          
+          // テスト用のアイテムをサービスに追加
+          await itemService.createItem(testItem.name, testItem.count, icon: testItem.icon);
+          final createdItem = itemService.items.first;
+          final initialCount = createdItem.count;
+          
+          // インクリメント操作を実行
+          final success = await itemService.incrementItem(createdItem.id);
+          expect(success, isTrue, reason: 'Increment operation should succeed on iteration ${i + 1}');
+          
+          // プロパティ検証: アイテムの数量が正確に1増加している
+          final updatedItem = itemService.getItemById(createdItem.id);
+          expect(updatedItem, isNotNull, reason: 'Item should exist after increment on iteration ${i + 1}');
+          expect(updatedItem!.count, equals(initialCount + 1), 
+                 reason: 'Count should increase by 1 on iteration ${i + 1}');
         }
         
-        PropertyTestHelpers.printTestStatistics(100, passedCount, failedCount);
         debugPrint('Property 6: すべてのテストが成功しました');
       }, tags: ['nocoris-item-management', 'property-6', 'property-based-test']);
 
@@ -115,62 +92,38 @@ void main() {
         debugPrint('検証対象: 要件 3.2');
         debugPrint('反復回数: 100');
         
-        int passedCount = 0;
-        int failedCount = 0;
-        
         for (int i = 0; i < 100; i++) {
           final mockStorage = MockStorageService();
           when(() => mockStorage.loadItems()).thenReturn([]);
           when(() => mockStorage.saveItems(any())).thenAnswer((_) async => true);
           final itemService = ItemService(mockStorage);
           
-          try {
-            // 数量が1以上のアイテムを生成
-            final testItem = PropertyTestHelpers.generateItemWithCount(
-              PropertyTestHelpers.generatePositiveCount()
-            );
-            
-            // 前提条件チェック: 数量が1以上
-            if (testItem.count < 1) {
-              passedCount++; // 前提条件を満たさない場合はスキップ
-              continue;
-            }
-            
-            // テスト用のアイテムをサービスに追加
-            await itemService.createItem(testItem.name, testItem.count, icon: testItem.icon);
-            final createdItem = itemService.items.first;
-            final initialCount = createdItem.count;
-            
-            // デクリメント操作を実行
-            final success = await itemService.decrementItem(createdItem.id);
-            
-            if (!success) {
-              failedCount++;
-              fail('Property 7 failed on iteration ${i + 1}: decrement operation returned false');
-            }
-            
-            // プロパティ検証: アイテムの数量が正確に1減少している
-            final updatedItem = itemService.getItemById(createdItem.id);
-            if (updatedItem == null) {
-              failedCount++;
-              fail('Property 7 failed on iteration ${i + 1}: item not found after decrement');
-            }
-            
-            if (updatedItem.count != initialCount - 1) {
-              failedCount++;
-              PropertyTestHelpers.debugPrintTestData(testItem);
-              fail('Property 7 failed on iteration ${i + 1}: expected count ${initialCount - 1}, got ${updatedItem.count}');
-            }
-            
-            passedCount++;
-          } catch (e) {
-            failedCount++;
-            debugPrint('Exception on iteration ${i + 1}: $e');
-            rethrow;
+          // 数量が1以上のアイテムを生成
+          final testItem = PropertyTestHelpers.generateItemWithCount(
+            PropertyTestHelpers.generatePositiveCount()
+          );
+          
+          // 前提条件チェック: 数量が1以上
+          if (testItem.count < 1) {
+            continue; // 前提条件を満たさない場合はスキップ
           }
+          
+          // テスト用のアイテムをサービスに追加
+          await itemService.createItem(testItem.name, testItem.count, icon: testItem.icon);
+          final createdItem = itemService.items.first;
+          final initialCount = createdItem.count;
+          
+          // デクリメント操作を実行
+          final success = await itemService.decrementItem(createdItem.id);
+          expect(success, isTrue, reason: 'Decrement operation should succeed on iteration ${i + 1}');
+          
+          // プロパティ検証: アイテムの数量が正確に1減少している
+          final updatedItem = itemService.getItemById(createdItem.id);
+          expect(updatedItem, isNotNull, reason: 'Item should exist after decrement on iteration ${i + 1}');
+          expect(updatedItem!.count, equals(initialCount - 1), 
+                 reason: 'Count should decrease by 1 on iteration ${i + 1}');
         }
         
-        PropertyTestHelpers.printTestStatistics(100, passedCount, failedCount);
         debugPrint('Property 7: すべてのテストが成功しました');
       }, tags: ['nocoris-item-management', 'property-7', 'property-based-test']);
 
@@ -203,56 +156,31 @@ void main() {
         debugPrint('検証対象: 要件 5.2');
         debugPrint('反復回数: 100');
         
-        int passedCount = 0;
-        int failedCount = 0;
-        
         for (int i = 0; i < 100; i++) {
           final mockStorage = MockStorageService();
           when(() => mockStorage.loadItems()).thenReturn([]);
           when(() => mockStorage.saveItems(any())).thenAnswer((_) async => true);
           final itemService = ItemService(mockStorage);
           
-          try {
-            final testItem = PropertyTestHelpers.generateRandomItem();
-            
-            // テスト用のアイテムをサービスに追加
-            await itemService.createItem(testItem.name, testItem.count, icon: testItem.icon);
-            final createdItem = itemService.items.first;
-            final initialLength = itemService.items.length;
-            
-            // 削除操作を実行
-            final success = await itemService.deleteItem(createdItem.id);
-            
-            if (!success) {
-              failedCount++;
-              fail('Property 10 failed on iteration ${i + 1}: delete operation returned false');
-            }
-            
-            // プロパティ検証: アイテムがリストから完全に削除されている
-            final itemExists = itemService.getItemById(createdItem.id) != null;
-            final lengthDecreased = itemService.items.length == initialLength - 1;
-            
-            if (itemExists) {
-              failedCount++;
-              PropertyTestHelpers.debugPrintTestData(testItem);
-              fail('Property 10 failed on iteration ${i + 1}: item still exists after deletion');
-            }
-            
-            if (!lengthDecreased) {
-              failedCount++;
-              PropertyTestHelpers.debugPrintTestData(testItem);
-              fail('Property 10 failed on iteration ${i + 1}: list length did not decrease');
-            }
-            
-            passedCount++;
-          } catch (e) {
-            failedCount++;
-            debugPrint('Exception on iteration ${i + 1}: $e');
-            rethrow;
-          }
+          final testItem = PropertyTestHelpers.generateRandomItem();
+          
+          // テスト用のアイテムをサービスに追加
+          await itemService.createItem(testItem.name, testItem.count, icon: testItem.icon);
+          final createdItem = itemService.items.first;
+          final initialLength = itemService.items.length;
+          
+          // 削除操作を実行
+          final success = await itemService.deleteItem(createdItem.id);
+          expect(success, isTrue, reason: 'Delete operation should succeed on iteration ${i + 1}');
+          
+          // プロパティ検証: アイテムがリストから完全に削除されている
+          final itemExists = itemService.getItemById(createdItem.id) != null;
+          final lengthDecreased = itemService.items.length == initialLength - 1;
+          
+          expect(itemExists, isFalse, reason: 'Item should be deleted on iteration ${i + 1}');
+          expect(lengthDecreased, isTrue, reason: 'List length should decrease by 1 on iteration ${i + 1}');
         }
         
-        PropertyTestHelpers.printTestStatistics(100, passedCount, failedCount);
         debugPrint('Property 10: すべてのテストが成功しました');
       }, tags: ['nocoris-item-management', 'property-10', 'property-based-test']);
 
