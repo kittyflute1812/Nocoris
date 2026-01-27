@@ -190,8 +190,8 @@ void main() {
 
     PropertyTestFramework.runPropertyGroup('無効入力の詳細テスト', () {
       // プロパティ 2の拡張: 様々な無効入力パターンのテスト
-      test('Property 2: 空白文字のみの名前は拒否される', () {
-        final whitespaceNames = [' ', '  ', '\t', '\n', '   \t  \n  '];
+      test('Property 2: 空文字列や空白文字のみの名前は拒否される', () {
+        final whitespaceNames = ['',' ', '  ', '\t', '\n', '   \t  \n  '];
         
         for (final name in whitespaceNames) {
           expect(
@@ -200,14 +200,6 @@ void main() {
             reason: 'Whitespace-only name "$name" should be rejected',
           );
         }
-      });
-
-      test('Property 2: 空文字列の名前は拒否される', () {
-        expect(
-          () => Item.create(name: '', initialCount: 0, icon: null),
-          throwsA(isA<ArgumentError>()),
-          reason: 'Empty string name should be rejected',
-        );
       });
     });
   });
