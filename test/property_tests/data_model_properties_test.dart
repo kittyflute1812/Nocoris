@@ -12,8 +12,7 @@ import '../helpers/property_test_helpers.dart';
 /// - プロパティ 4: 数量設定の正確性
 void main() {
   PropertyTestFramework.runAllProperties(() {
-    PropertyTestFramework.runPropertyGroup('データモデル基本プロパティ', () {
-
+    PropertyTestFramework.runPropertyGroup('プロパティ 1: アイテム作成によるリスト拡張', () {
       // プロパティ 1: アイテム作成によるリスト拡張
       // **検証対象: 要件 1.1**
       PropertyTestFramework.runProperty3<String, int, String?>(
@@ -42,9 +41,11 @@ void main() {
         },
         generator1: PropertyTestHelpers.generateValidItemName,
         generator2: PropertyTestHelpers.generateValidCount,
-        generator3: PropertyTestHelpers.generateEmojiIcon,
+        generator3: () => PropertyTestHelpers.generateEmojiIcon(),
       );
+    });
 
+    PropertyTestFramework.runPropertyGroup('プロパティ 2: 無効入力の拒否', () {
       // プロパティ 2: 無効入力の拒否
       // **検証対象: 要件 1.3, 4.4**
       PropertyTestFramework.runProperty<String>(
@@ -68,6 +69,21 @@ void main() {
         generator: PropertyTestHelpers.generateInvalidItemName,
       );
 
+      // プロパティ 2の拡張: 様々な無効入力パターンのテスト
+      test('Property 2: 空文字列や空白文字のみの名前は拒否される', () {
+        final invalidNames = ['', ' ', '  ', '\t', '\n', '   \t  \n  '];
+        
+        for (final name in invalidNames) {
+          expect(
+            () => Item.create(name: name, initialCount: 0, icon: null),
+            throwsA(isA<ArgumentError>()),
+            reason: 'Invalid name "$name" should be rejected',
+          );
+        }
+      });
+    });
+
+    PropertyTestFramework.runPropertyGroup('プロパティ 3: アイコン設定の一貫性', () {
       // プロパティ 3: アイコン設定の一貫性
       // **検証対象: 要件 1.2, 8.2**
       PropertyTestFramework.runProperty2<String, String>(
@@ -92,32 +108,6 @@ void main() {
         generator2: PropertyTestHelpers.generateEmojiIcon,
       );
 
-      // プロパティ 4: 数量設定の正確性
-      // **検証対象: 要件 1.4**
-      PropertyTestFramework.runProperty2<String, int>(
-        propertyNumber: 4,
-        property: (name, count) {
-          try {
-            // 指定した数量でアイテムを作成
-            final item = Item.create(
-              name: name,
-              initialCount: count,
-              icon: null,
-            );
-            
-            // プロパティ検証: 設定した数量が正しく設定されている
-            return item.count == count;
-          } catch (e) {
-            // 有効な入力で例外が発生した場合はプロパティ違反
-            return false;
-          }
-        },
-        generator1: PropertyTestHelpers.generateValidItemName,
-        generator2: PropertyTestHelpers.generateValidCount,
-      );
-    });
-
-    PropertyTestFramework.runPropertyGroup('アイコン設定の詳細テスト', () {
       // プロパティ 3の拡張: nullアイコンの一貫性テスト
       PropertyTestFramework.runProperty<String>(
         propertyNumber: 3,
@@ -141,7 +131,31 @@ void main() {
       );
     });
 
-    PropertyTestFramework.runPropertyGroup('数量設定の境界値テスト', () {
+    PropertyTestFramework.runPropertyGroup('プロパティ 4: 数量設定の正確性', () {
+      // プロパティ 4: 数量設定の正確性
+      // **検証対象: 要件 1.4**
+      PropertyTestFramework.runProperty2<String, int>(
+        propertyNumber: 4,
+        property: (name, count) {
+          try {
+            // 指定した数量でアイテムを作成
+            final item = Item.create(
+              name: name,
+              initialCount: count,
+              icon: null,
+            );
+            
+            // プロパティ検証: 設定した数量が正しく設定されている
+            return item.count == count;
+          } catch (e) {
+            // 有効な入力で例外が発生した場合はプロパティ違反
+            return false;
+          }
+        },
+        generator1: PropertyTestHelpers.generateValidItemName,
+        generator2: PropertyTestHelpers.generateValidCount,
+      );
+
       // プロパティ 4の拡張: 境界値（0）のテスト
       PropertyTestFramework.runProperty<String>(
         propertyNumber: 4,
@@ -186,21 +200,6 @@ void main() {
         generator1: PropertyTestHelpers.generateValidItemName,
         generator2: () => PropertyTestHelpers.generateValidCount() + 1000, // より大きな値
       );
-    });
-
-    PropertyTestFramework.runPropertyGroup('無効入力の詳細テスト', () {
-      // プロパティ 2の拡張: 様々な無効入力パターンのテスト
-      test('Property 2: 空文字列や空白文字のみの名前は拒否される', () {
-        final invalidNames = ['', ' ', '  ', '\t', '\n', '   \t  \n  '];
-        
-        for (final name in invalidNames) {
-          expect(
-            () => Item.create(name: name, initialCount: 0, icon: null),
-            throwsA(isA<ArgumentError>()),
-            reason: 'Invalid name "$name" should be rejected',
-          );
-        }
-      });
     });
   });
 }
