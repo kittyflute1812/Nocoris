@@ -10,71 +10,58 @@
 include: package:flutter_lints/flutter.yaml
 
 linter:
-  # The lint rules applied to this project can be customized in the
-  # section below to disable rules from the `package:flutter_lints/flutter.yaml`
-  # included above or to enable additional rules. A list of all available lints
-  # and their documentation is published at https://dart.dev/lints.
-  #
-  # Instead of disabling a lint rule for the entire project in the
-  # section below, it can also be suppressed for a single line of code
-  # or a specific dart file by using the `// ignore: name_of_lint` and
-  # `// ignore_for_file: name_of_lint` syntax on the line or in the file
-  # producing the lint.
+  # Nocoris プロジェクト固有のコーディング規約
+  # 高品質で保守しやすいコードを維持するための厳格なルール設定
   rules:
-    # Nocorisプロジェクト固有のlintルール
-    
-    # Constコンストラクタの使用を推奨
-    prefer_const_constructors: true
-    prefer_const_declarations: true
-    prefer_const_literals_to_create_immutables: true
-    unnecessary_const: true
-    unnecessary_new: true
-    
-    # コード品質
-    avoid_print: true  # print()の使用を禁止（loggerを使用）
-    prefer_single_quotes: true
-    always_declare_return_types: true
-    require_trailing_commas: true
-    
-    # コード構造
-    sort_constructors_first: true
-    sort_unnamed_constructors_first: true
-    
-    # Null安全性
-    avoid_null_checks_in_equality_operators: true
-    prefer_is_empty: true
-    prefer_is_not_empty: true
-    
-    # パフォーマンス
-    avoid_function_literals_in_foreach_calls: true
-    prefer_foreach: true
-    prefer_for_elements_to_map_fromIterable: true
-    prefer_if_elements_to_conditional_expressions: true
-    
-    # 可読性
-    prefer_adjacent_string_concatenation: true
-    prefer_interpolation_to_compose_strings: true
-    unnecessary_brace_in_string_interps: true
-    
-    # エラー防止
-    avoid_empty_else: true
-    avoid_returning_null_for_void: true
-    cancel_subscriptions: true
-    close_sinks: true
-    
-analyzer:
-  errors:
-    # 警告をエラーとして扱う（より厳格に）
-    avoid_print: error
-    unnecessary_const: error
-    invalid_constant: error
-    unused_import: error
-    
-  exclude:
-    # 生成されたファイルを除外
-    - "**/*.g.dart"
-    - "**/*.freezed.dart"
-    - "**/*.mocks.dart"
+    # === 必須ルール（警告ゼロを目指す） ===
+    avoid_print: true                              # print()使用禁止 - loggerを使用
+    prefer_const_constructors: true                # constコンストラクタを積極使用
+    prefer_const_literals_to_create_immutables: true  # 不変リテラルにconst使用
+    unnecessary_const: true                        # 不要なconstを除去
+    unnecessary_new: true                          # 不要なnewキーワードを除去
+    prefer_final_locals: true                      # ローカル変数はfinalを優先
+    prefer_final_in_for_each: true                 # for-eachでfinalを使用
+
+    # === 型安全性とコード品質 ===
+    always_declare_return_types: true              # 戻り値の型を明示
+    prefer_typing_uninitialized_variables: true    # 未初期化変数の型注釈
+    avoid_types_as_parameter_names: true           # パラメータ名に型名使用禁止
+    avoid_unused_constructor_parameters: true      # 未使用コンストラクタパラメータ禁止
+    prefer_single_quotes: true                     # シングルクォート優先
+
+    # === パフォーマンスとメモリ管理 ===
+    avoid_function_literals_in_foreach_calls: true # forEach内での関数リテラル回避
+    prefer_for_elements_to_map_fromIterable: true  # Map.fromIterableよりfor要素優先
+    prefer_collection_literals: true               # コレクションリテラル優先
+    prefer_is_empty: true                          # length == 0 より isEmpty使用
+    prefer_is_not_empty: true                      # length > 0 より isNotEmpty使用
+
+    # === 可読性とメンテナンス性 ===
+    always_put_required_named_parameters_first: true  # required パラメータを最初に
+    avoid_redundant_argument_values: true         # 冗長な引数値を回避
+    prefer_adjacent_string_concatenation: true     # 隣接文字列連結を優先
+    prefer_interpolation_to_compose_strings: true # 文字列補間を優先
+    unnecessary_string_interpolations: true       # 不要な文字列補間を除去
+
+    # === Null安全性 ===
+    avoid_null_checks_in_equality_operators: true # 等価演算子でのnullチェック回避
+    prefer_null_aware_operators: true             # null認識演算子を優先
+    unnecessary_null_in_if_null_operators: true   # if-null演算子の不要なnull除去
+
+    # === Flutter固有のベストプラクティス ===
+    use_key_in_widget_constructors: true          # Widgetコンストラクタでのkey使用
+    prefer_const_constructors_in_immutables: true # 不変クラスでのconstコンストラクタ
+    sized_box_for_whitespace: true                # 空白にはSizedBoxを使用
+    avoid_unnecessary_containers: true            # 不要なContainerを回避
+
+    # === その他の品質向上ルール ===
+    avoid_empty_else: true                         # 空のelse文を回避
+    avoid_returning_null_for_void: true           # void関数でのnull返却禁止
+    cancel_subscriptions: true                     # Subscriptionのキャンセル必須
+    close_sinks: true                              # Sinkのクローズ必須
+    hash_and_equals: true                          # hashCodeとequalsの一貫性
+    no_duplicate_case_values: true                 # switch文での重複case禁止
+    valid_regexps: true                            # 正規表現の妥当性チェック
 
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options
