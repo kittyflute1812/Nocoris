@@ -85,25 +85,6 @@ class PropertyTestConfig {
     return propertyDescriptions.keys.toList()..sort();
   }
 
-  /// プロパティテストの実行環境設定
-  static const Map<String, dynamic> testEnvironment = {
-    'timeout': Duration(minutes: 10), // プロパティテストのタイムアウト
-    'retry': 3, // 失敗時のリトライ回数
-    'parallel': true, // 並列実行を許可
-  };
-
-  /// テスト実行時の設定を取得する
-  static Duration getTestTimeout() {
-    return testEnvironment['timeout'] as Duration;
-  }
-
-  /// リトライ回数を取得する
-  static int getRetryCount() {
-    return testEnvironment['retry'] as int;
-  }
-
-  /// 並列実行が許可されているかを取得する
-  static bool isParallelExecutionAllowed() {
-    return testEnvironment['parallel'] as bool;
-  }
+  /// プロパティテストのデフォルトタイムアウト
+  static const Duration defaultTestTimeout = Duration(minutes: 10);
 }
