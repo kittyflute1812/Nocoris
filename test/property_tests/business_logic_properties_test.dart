@@ -84,6 +84,19 @@ void main() {
           expect(updatedItem!.count, equals(1));
         }
       }, tags: ['nocoris-item-management', 'property-6', 'property-based-test']);
+
+      test('Property 6: 存在しないアイテムのインクリメントは失敗する', () async {
+        final mockStorage = MockStorageService();
+        when(() => mockStorage.loadItems()).thenReturn([]);
+        when(() => mockStorage.saveItems(any())).thenAnswer((_) async => true);
+        final itemService = ItemService(mockStorage);
+
+        const nonExistentId = 'non-existent-id';
+        final success = await itemService.incrementItem(nonExistentId);
+        
+        expect(success, isFalse, 
+               reason: 'Incrementing non-existent item should return false');
+      }, tags: ['nocoris-item-management', 'property-6', 'error-handling']);
     });
 
     group('プロパティ 7: デクリメント操作の正確性', () {
@@ -148,6 +161,19 @@ void main() {
         expect(updatedItem!.count, equals(0), 
                reason: 'Count should remain 0 when decrementing from 0');
       }, tags: ['nocoris-item-management', 'property-7', 'property-based-test']);
+
+      test('Property 7: 存在しないアイテムのデクリメントは失敗する', () async {
+        final mockStorage = MockStorageService();
+        when(() => mockStorage.loadItems()).thenReturn([]);
+        when(() => mockStorage.saveItems(any())).thenAnswer((_) async => true);
+        final itemService = ItemService(mockStorage);
+
+        const nonExistentId = 'non-existent-id';
+        final success = await itemService.decrementItem(nonExistentId);
+        
+        expect(success, isFalse, 
+               reason: 'Decrementing non-existent item should return false');
+      }, tags: ['nocoris-item-management', 'property-7', 'error-handling']);
     });
 
     group('プロパティ 10: アイテム削除の完全性', () {
@@ -228,34 +254,6 @@ void main() {
           }
         }
       }, tags: ['nocoris-item-management', 'property-10', 'property-based-test']);
-    });
-
-    group('エラーハンドリングテスト', () {
-      test('Property 6: 存在しないアイテムのインクリメントは失敗する', () async {
-        final mockStorage = MockStorageService();
-        when(() => mockStorage.loadItems()).thenReturn([]);
-        when(() => mockStorage.saveItems(any())).thenAnswer((_) async => true);
-        final itemService = ItemService(mockStorage);
-
-        const nonExistentId = 'non-existent-id';
-        final success = await itemService.incrementItem(nonExistentId);
-        
-        expect(success, isFalse, 
-               reason: 'Incrementing non-existent item should return false');
-      }, tags: ['nocoris-item-management', 'property-6', 'error-handling']);
-
-      test('Property 7: 存在しないアイテムのデクリメントは失敗する', () async {
-        final mockStorage = MockStorageService();
-        when(() => mockStorage.loadItems()).thenReturn([]);
-        when(() => mockStorage.saveItems(any())).thenAnswer((_) async => true);
-        final itemService = ItemService(mockStorage);
-
-        const nonExistentId = 'non-existent-id';
-        final success = await itemService.decrementItem(nonExistentId);
-        
-        expect(success, isFalse, 
-               reason: 'Decrementing non-existent item should return false');
-      }, tags: ['nocoris-item-management', 'property-7', 'error-handling']);
 
       test('Property 10: 存在しないアイテムの削除は失敗する', () async {
         final mockStorage = MockStorageService();
