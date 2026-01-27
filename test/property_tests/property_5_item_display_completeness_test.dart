@@ -16,9 +16,9 @@ void main() {
         int passedCount = 0;
         int failedCount = 0;
         
-        print('実行中: Property 5 - アイテム表示の完全性');
-        print('検証対象: 要件 2.2');
-        print('反復回数: $iterations');
+        debugPrint('実行中: Property 5 - アイテム表示の完全性');
+        debugPrint('検証対象: 要件 2.2');
+        debugPrint('反復回数: $iterations');
         
         for (int i = 0; i < iterations; i++) {
           try {
@@ -30,18 +30,21 @@ void main() {
             } else {
               failedCount++;
               PropertyTestHelpers.debugPrintTestData(item);
-              fail('Property 5 failed on iteration ${i + 1} with item: $item');
+              debugPrint('Property 5 failed on iteration ${i + 1} with item: $item');
             }
           } catch (e, stackTrace) {
             failedCount++;
-            print('Exception on iteration ${i + 1}: $e');
-            print('Stack trace: $stackTrace');
-            rethrow;
+            debugPrint('Exception on iteration ${i + 1}: $e');
+            debugPrint('Stack trace: $stackTrace');
           }
         }
         
         PropertyTestHelpers.printTestStatistics(iterations, passedCount, failedCount);
-        print('Property 5: すべてのテストが成功しました');
+        if (failedCount > 0) {
+          fail('$failedCount/$iterations iterations failed');
+        } else {
+          debugPrint('Property 5: すべてのテストが成功しました');
+        }
       }, tags: ['nocoris-item-management', 'property-5', 'property-based-test']);
     });
   });
@@ -68,15 +71,15 @@ Future<bool> _testItemDisplayCompleteness(WidgetTester tester, Item item) async 
 
   await tester.pump();
 
-  // アイテム名が表示されていることを確認
-  final nameDisplayed = find.text(item.name).evaluate().isNotEmpty;
+  // アイテム名が表示されていることを確認（semanticsLabelを使用してより正確に特定）
+  final nameDisplayed = tester.any(find.bySemanticsLabel('アイテム名: ${item.name}'));
   if (!nameDisplayed) {
     PropertyTestHelpers.debugPrintTestData('Item name not displayed: ${item.name}');
     return false;
   }
 
-  // 現在の数量が表示されていることを確認
-  final countDisplayed = find.text('${item.count}').evaluate().isNotEmpty;
+  // 現在の数量が表示されていることを確認（semanticsLabelを使用してより正確に特定）
+  final countDisplayed = tester.any(find.bySemanticsLabel('のこり: ${item.count}個'));
   if (!countDisplayed) {
     PropertyTestHelpers.debugPrintTestData('Item count not displayed: ${item.count}');
     return false;
@@ -84,7 +87,7 @@ Future<bool> _testItemDisplayCompleteness(WidgetTester tester, Item item) async 
 
   // アイコンが設定されている場合、アイコンが表示されていることを確認
   if (item.icon != null) {
-    final iconDisplayed = find.text(item.icon!).evaluate().isNotEmpty;
+    final iconDisplayed = tester.any(find.text(item.icon!));
     if (!iconDisplayed) {
       PropertyTestHelpers.debugPrintTestData('Item icon not displayed: ${item.icon}');
       return false;
