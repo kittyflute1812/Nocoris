@@ -225,6 +225,154 @@ void main() {
       expect(item1 == item2, true);
       expect(item1 == item3, false);
     });
+
+    group('バリデーションテスト', () {
+      test('Item.create()で空文字列の名前を拒否すること', () {
+        expect(
+          () => Item.create(name: '', initialCount: 0),
+          throwsA(isA<ArgumentError>()),
+        );
+      });
+
+      test('Item.create()で空白のみの名前を拒否すること', () {
+        expect(
+          () => Item.create(name: '   ', initialCount: 0),
+          throwsA(isA<ArgumentError>()),
+        );
+      });
+
+      test('Item.create()で負の数量を拒否すること', () {
+        expect(
+          () => Item.create(name: 'Test', initialCount: -1),
+          throwsA(isA<ArgumentError>()),
+        );
+      });
+
+      test('通常のコンストラクタで空文字列の名前を拒否すること', () {
+        expect(
+          () => Item(
+            id: '1',
+            name: '',
+            count: 0,
+            createdAt: DateTime.now(),
+            updatedAt: DateTime.now(),
+          ),
+          throwsA(isA<ArgumentError>()),
+        );
+      });
+
+      test('copyWith()で無効な名前に変更しようとした場合に拒否すること', () {
+        expect(
+          () => testItem.copyWith(name: ''),
+          throwsA(isA<ArgumentError>()),
+        );
+      });
+    });
+
+    group('後方互換性テスト', () {
+      test('fromJson()で空文字列の名前をサニタイズすること', () {
+        final json = {
+          'id': '1',
+          'name': '',
+          'count': 5,
+          'createdAt': '2025-10-13T00:00:00.000',
+          'updatedAt': '2025-10-13T00:00:00.000',
+        };
+
+        final item = Item.fromJson(json);
+
+        expect(item.id, '1');
+        expect(item.name, '無名のアイテム');
+        expect(item.count, 5);
+      });
+
+      test('fromJson()で空白のみの名前をサニタイズすること', () {
+        final json = {
+          'id': '1',
+          'name': '   ',
+          'count': 5,
+          'createdAt': '2025-10-13T00:00:00.000',
+          'updatedAt': '2025-10-13T00:00:00.000',
+        };
+
+        final item = Item.fromJson(json);
+
+        expect(item.id, '1');
+        expect(item.name, '無名のアイテム');
+        expect(item.count, 5);
+      });
+
+      test('fromJson()で長すぎる名前を切り詰めること', () {
+        // AppConstants.maxNameLengthは100
+        final longName = 'a' * 150; // 150文字の名前
+        final json = {
+          'id': '1',
+          'name': longName,
+          'count': 5,
+          'createdAt': '2025-10-13T00:00:00.000',
+          'updatedAt': '2025-10-13T00:00:00.000',
+        };
+
+        final item = Item.fromJson(json);
+
+        expect(item.id, '1');
+        expect(item.name.length, 100); // AppConstants.maxNameLength
+        expect(item.name, startsWith('a'));
+        expect(item.count, 5);
+      });
+
+      test('fromJson()で有効な名前はそのまま保持すること', () {
+        final json = {
+          'id': '1',
+          'name': 'Valid Name',
+          'count': 5,
+          'createdAt': '2025-10-13T00:00:00.000',
+          'updatedAt': '2025-10-13T00:00:00.000',
+        };
+
+        final item = Item.fromJson(json);
+
+        expect(item.id, '1');
+        expect(item.name, 'Valid Name');
+        expect(item.count, 5);
+      });
+
+      test('サニタイズされたアイテムのcopyWith()で名前を変更しない場合は正常動作すること', () {
+        final json = {
+          'id': '1',
+          'name': '',
+          'count': 5,
+          'createdAt': '2025-10-13T00:00:00.000',
+          'updatedAt': '2025-10-13T00:00:00.000',
+        };
+
+        final sanitizedItem = Item.fromJson(json);
+        expect(sanitizedItem.name, '無名のアイテム');
+
+        // 名前を変更せずにcopyWith
+        final updatedItem = sanitizedItem.copyWith(count: 10);
+        expect(updatedItem.name, '無名のアイテム');
+        expect(updatedItem.count, 10);
+      });
+
+      test('サニタイズされたアイテムのcopyWith()で有効な名前に変更できること', () {
+        final json = {
+          'id': '1',
+          'name': '',
+          'count': 5,
+          'createdAt': '2025-10-13T00:00:00.000',
+          'updatedAt': '2025-10-13T00:00:00.000',
+        };
+
+        final sanitizedItem = Item.fromJson(json);
+        expect(sanitizedItem.name, '無名のアイテム');
+
+        // 有効な名前に変更
+        final updatedItem = sanitizedItem.copyWith(name: 'New Valid Name');
+        expect(updatedItem.name, 'New Valid Name');
+        expect(updatedItem.count, 5);
+      });
+    });
   });
 }
 
