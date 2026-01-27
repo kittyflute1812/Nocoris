@@ -106,6 +106,19 @@ class Item {
     required int initialCount,
     String? icon,
   }) {
+    // 名前の検証
+    if (name.isEmpty) {
+      throw ArgumentError('Item name cannot be empty');
+    }
+    if (name.trim().isEmpty) {
+      throw ArgumentError('Item name cannot be whitespace only');
+    }
+    
+    // 数量の検証
+    if (initialCount < 0) {
+      throw ArgumentError('Initial count must be non-negative');
+    }
+    
     final now = DateTime.now();
     final uuid = Uuid();
     return Item(
