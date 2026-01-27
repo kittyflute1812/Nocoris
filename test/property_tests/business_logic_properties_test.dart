@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:nocoris/features/item/models/item.dart';
@@ -18,20 +19,20 @@ class MockStorageService extends Mock implements StorageService {}
 void main() {
   group('Property-Based Tests - ビジネスロジック', () {
     setUpAll(() {
-      print('=== ビジネスロジックプロパティテスト開始 ===');
-      print('Feature: nocoris-item-management');
-      print('プロパティ 6, 7, 10 の検証');
+      debugPrint('=== ビジネスロジックプロパティテスト開始 ===');
+      debugPrint('Feature: nocoris-item-management');
+      debugPrint('プロパティ 6, 7, 10 の検証');
     });
 
     tearDownAll(() {
-      print('=== ビジネスロジックプロパティテスト完了 ===');
+      debugPrint('=== ビジネスロジックプロパティテスト完了 ===');
     });
 
     group('プロパティ 6: インクリメント操作の正確性', () {
       test('Property 6: インクリメント操作の正確性 - **検証対象: 要件 3.1**', () async {
-        print('実行中: Property 6 - インクリメント操作の正確性');
-        print('検証対象: 要件 3.1');
-        print('反復回数: 100');
+        debugPrint('実行中: Property 6 - インクリメント操作の正確性');
+        debugPrint('検証対象: 要件 3.1');
+        debugPrint('反復回数: 100');
         
         int passedCount = 0;
         int failedCount = 0;
@@ -74,13 +75,13 @@ void main() {
             passedCount++;
           } catch (e) {
             failedCount++;
-            print('Exception on iteration ${i + 1}: $e');
+            debugPrint('Exception on iteration ${i + 1}: $e');
             rethrow;
           }
         }
         
         PropertyTestHelpers.printTestStatistics(100, passedCount, failedCount);
-        print('Property 6: すべてのテストが成功しました');
+        debugPrint('Property 6: すべてのテストが成功しました');
       }, tags: ['nocoris-item-management', 'property-6', 'property-based-test']);
 
       test('Property 6: 数量0からのインクリメント', () async {
@@ -110,9 +111,9 @@ void main() {
 
     group('プロパティ 7: デクリメント操作の正確性', () {
       test('Property 7: デクリメント操作の正確性 - **検証対象: 要件 3.2**', () async {
-        print('実行中: Property 7 - デクリメント操作の正確性');
-        print('検証対象: 要件 3.2');
-        print('反復回数: 100');
+        debugPrint('実行中: Property 7 - デクリメント操作の正確性');
+        debugPrint('検証対象: 要件 3.2');
+        debugPrint('反復回数: 100');
         
         int passedCount = 0;
         int failedCount = 0;
@@ -164,13 +165,13 @@ void main() {
             passedCount++;
           } catch (e) {
             failedCount++;
-            print('Exception on iteration ${i + 1}: $e');
+            debugPrint('Exception on iteration ${i + 1}: $e');
             rethrow;
           }
         }
         
         PropertyTestHelpers.printTestStatistics(100, passedCount, failedCount);
-        print('Property 7: すべてのテストが成功しました');
+        debugPrint('Property 7: すべてのテストが成功しました');
       }, tags: ['nocoris-item-management', 'property-7', 'property-based-test']);
 
       test('Property 7: 数量0からのデクリメント（境界値テスト）', () async {
@@ -198,9 +199,9 @@ void main() {
 
     group('プロパティ 10: アイテム削除の完全性', () {
       test('Property 10: アイテム削除の完全性 - **検証対象: 要件 5.2**', () async {
-        print('実行中: Property 10 - アイテム削除の完全性');
-        print('検証対象: 要件 5.2');
-        print('反復回数: 100');
+        debugPrint('実行中: Property 10 - アイテム削除の完全性');
+        debugPrint('検証対象: 要件 5.2');
+        debugPrint('反復回数: 100');
         
         int passedCount = 0;
         int failedCount = 0;
@@ -246,13 +247,13 @@ void main() {
             passedCount++;
           } catch (e) {
             failedCount++;
-            print('Exception on iteration ${i + 1}: $e');
+            debugPrint('Exception on iteration ${i + 1}: $e');
             rethrow;
           }
         }
         
         PropertyTestHelpers.printTestStatistics(100, passedCount, failedCount);
-        print('Property 10: すべてのテストが成功しました');
+        debugPrint('Property 10: すべてのテストが成功しました');
       }, tags: ['nocoris-item-management', 'property-10', 'property-based-test']);
 
       test('Property 10: 複数アイテム中の特定アイテム削除', () async {
