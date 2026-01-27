@@ -42,7 +42,7 @@ void main() {
         },
         generator1: PropertyTestHelpers.generateValidItemName,
         generator2: PropertyTestHelpers.generateValidCount,
-        generator3: () => PropertyTestHelpers.generateEmojiIcon(),
+        generator3: PropertyTestHelpers.generateEmojiIcon,
       );
 
       // プロパティ 2: 無効入力の拒否
