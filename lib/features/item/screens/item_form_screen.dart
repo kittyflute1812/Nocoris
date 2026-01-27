@@ -286,10 +286,7 @@ class _ItemNameField extends StatelessWidget {
         border: OutlineInputBorder(),
       ),
       validator: (value) {
-        if (value == null || value.isEmpty) {
-          return AppStrings.itemNameRequired;
-        }
-        if (value.trim().isEmpty) {
+        if (value?.trim().isEmpty ?? true) {
           return AppStrings.itemNameRequired;
         }
         return null;

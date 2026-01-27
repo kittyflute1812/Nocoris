@@ -37,9 +37,24 @@ class ItemService extends ChangeNotifier {
     }
   }
 
+  /// アイテム名のバリデーションを行う
+  void _validateItemName(String name) {
+    if (name.isEmpty) {
+      throw ArgumentError('Item name cannot be empty');
+    }
+    if (name.trim().isEmpty) {
+      throw ArgumentError('Item name cannot be only whitespace');
+    }
+    if (name.length > 100) { // AppConstants.maxNameLength
+      throw ArgumentError('Item name cannot exceed 100 characters');
+    }
+  }
+
   /// 新しいアイテムを作成
   Future<Item> createItem(String name, int initialCount, {String? icon}) async {
-    // 名前のバリデーションはItemコンストラクタで行われる
+    // 名前のバリデーション
+    _validateItemName(name);
+    
     final item = Item.create(name: name, initialCount: initialCount, icon: icon);
     _items.add(item);
     await _saveItems();
@@ -54,15 +69,7 @@ class ItemService extends ChangeNotifier {
 
     // 名前が提供された場合はバリデーションを行う
     if (name != null) {
-      if (name.isEmpty) {
-        throw ArgumentError('Item name cannot be empty');
-      }
-      if (name.trim().isEmpty) {
-        throw ArgumentError('Item name cannot be only whitespace');
-      }
-      if (name.length > 100) { // AppConstants.maxNameLength
-        throw ArgumentError('Item name cannot exceed 100 characters');
-      }
+      _validateItemName(name);
     }
 
     _items[index] = _items[index].copyWith(
