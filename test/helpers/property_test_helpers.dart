@@ -145,4 +145,30 @@ class PropertyTestHelpers {
   static String generateEmojiIcon() {
     return _generateRandomEmoji();
   }
+
+  /// 正の数量を生成する（1以上）
+  static int generatePositiveCount() {
+    return _random.nextInt(999) + 1; // 1-999の範囲で正の数量
+  }
+
+  /// 指定した数量でアイテムを生成する
+  static Item generateItemWithCount(int count) {
+    final name = generateValidItemName();
+    final icon = _random.nextBool() ? _generateRandomEmoji() : null;
+    final now = DateTime.now();
+
+    return Item(
+      id: _generateRandomId(),
+      name: name,
+      count: count,
+      icon: icon,
+      createdAt: now.subtract(Duration(days: _random.nextInt(365))),
+      updatedAt: now,
+    );
+  }
+
+  /// 指定した長さのアイテムリストを生成する
+  static List<Item> generateItemList({required int length}) {
+    return List.generate(length, (_) => generateRandomItem());
+  }
 }
