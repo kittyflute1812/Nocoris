@@ -19,10 +19,6 @@ void main() {
       PropertyTestFramework.runProperty3<String, int, String?>(
         propertyNumber: 1,
         property: (name, count, icon) {
-          // 初期状態のアイテムリストを作成
-          final initialItems = <Item>[];
-          final initialLength = initialItems.length;
-          
           try {
             // アイテムを作成
             final createdItem = Item.create(
@@ -32,15 +28,13 @@ void main() {
             );
             
             // アイテムをリストに追加
-            final newItems = [...initialItems, createdItem];
+            final newItems = [createdItem];
             
-            // プロパティ検証: リストの長さが1増加している
-            final lengthIncreased = newItems.length == initialLength + 1;
-            
-            // プロパティ検証: 作成されたアイテムがリストに含まれている
+            // プロパティ検証: リストの長さが1で、作成したアイテムが含まれる
+            final lengthCorrect = newItems.length == 1;
             final itemInList = newItems.any((item) => item.id == createdItem.id);
             
-            return lengthIncreased && itemInList;
+            return lengthCorrect && itemInList;
           } catch (e) {
             // 有効な入力で例外が発生した場合はプロパティ違反
             return false;
@@ -48,7 +42,7 @@ void main() {
         },
         generator1: PropertyTestHelpers.generateValidItemName,
         generator2: PropertyTestHelpers.generateValidCount,
-        generator3: () => PropertyTestHelpers.generateEmojiIcon(),
+        generator3: PropertyTestHelpers.generateEmojiIcon,
       );
 
       // プロパティ 2: 無効入力の拒否
