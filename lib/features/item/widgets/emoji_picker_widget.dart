@@ -10,8 +10,7 @@ class EmojiPickerWidget extends StatelessWidget {
   final String? selectedEmoji;
 
   const EmojiPickerWidget({
-    super.key,
-    required this.onEmojiSelected,
+    required this.onEmojiSelected, super.key,
     this.selectedEmoji,
   });
 
@@ -53,30 +52,20 @@ class EmojiPickerWidget extends StatelessWidget {
               onEmojiSelected(emoji.emoji);
             },
             config: Config(
-              height: 256,
-              checkPlatformCompatibility: true,
               emojiViewConfig: EmojiViewConfig(
                 emojiSizeMax: 28 *
                     (foundation.defaultTargetPlatform == TargetPlatform.iOS
                         ? 1.20
                         : 1.0),
-                columns: 7,
-                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-              ),
-              skinToneConfig: const SkinToneConfig(
-                enabled: true,
               ),
               categoryViewConfig: CategoryViewConfig(
-                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                 iconColorSelected: Theme.of(context).colorScheme.primary,
               ),
               bottomActionBarConfig: BottomActionBarConfig(
-                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                 buttonColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                 buttonIconColor: Theme.of(context).colorScheme.onSurface,
               ),
               searchViewConfig: SearchViewConfig(
-                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                 buttonIconColor: Theme.of(context).colorScheme.primary,
               ),
             ),
