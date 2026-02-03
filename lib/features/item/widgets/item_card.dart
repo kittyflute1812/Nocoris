@@ -20,12 +20,7 @@ class ItemCard extends StatelessWidget {
   final int index;
 
   const ItemCard({
-    super.key,
-    required this.item,
-    required this.onDecrement,
-    required this.onIncrement,
-    required this.onEdit,
-    required this.onDelete,
+    required this.item, required this.onDecrement, required this.onIncrement, required this.onEdit, required this.onDelete, super.key,
     this.index = 0,
   });
 
@@ -46,11 +41,11 @@ class ItemCard extends StatelessWidget {
           color: AppColors.borderLight,
           width: 1.5,
         ),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
             color: AppColors.shadow,
             blurRadius: 8,
-            offset: const Offset(0, 2),
+            offset: Offset(0, 2),
           ),
         ],
       ),
@@ -106,11 +101,11 @@ class _ItemCardHeader extends StatelessWidget {
                 color: AppColors.borderLight,
                 width: 1.5,
               ),
-              boxShadow: [
+              boxShadow: const [
                 BoxShadow(
                   color: AppColors.shadowLight,
                   blurRadius: 4,
-                  offset: const Offset(0, 2),
+                  offset: Offset(0, 2),
                 ),
               ],
             ),
@@ -158,7 +153,7 @@ class _ItemCardMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     return PopupMenuButton<String>(
       tooltip: AppStrings.itemMenuTooltip,
-      icon: Icon(
+      icon: const Icon(
         Icons.more_vert,
         color: AppColors.textSecondary,
       ),
@@ -174,23 +169,23 @@ class _ItemCardMenu extends StatelessWidget {
         }
       },
       itemBuilder: (context) => [
-        PopupMenuItem(
+        const PopupMenuItem(
           value: 'edit',
           child: Row(
             children: [
               Icon(Icons.edit, size: 20, color: AppColors.primary),
-              const SizedBox(width: 12),
-              const Text(AppStrings.edit),
+              SizedBox(width: 12),
+              Text(AppStrings.edit),
             ],
           ),
         ),
-        PopupMenuItem(
+        const PopupMenuItem(
           value: 'delete',
           child: Row(
             children: [
               Icon(Icons.delete, size: 20, color: AppColors.error),
-              const SizedBox(width: 12),
-              const Text(AppStrings.delete),
+              SizedBox(width: 12),
+              Text(AppStrings.delete),
             ],
           ),
         ),
@@ -295,11 +290,11 @@ class _CounterButtons extends StatelessWidget {
                   color: count > 0 ? AppColors.primary : AppColors.borderLight,
                   shape: BoxShape.circle,
                   boxShadow: count > 0
-                      ? [
+                      ? const [
                           BoxShadow(
                             color: AppColors.shadow,
                             blurRadius: 4,
-                            offset: const Offset(0, 2),
+                            offset: Offset(0, 2),
                           ),
                         ]
                       : null,
@@ -326,14 +321,14 @@ class _CounterButtons extends StatelessWidget {
               child: Container(
                 width: 48,
                 height: 48,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: AppColors.accent,
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
                       color: AppColors.shadow,
                       blurRadius: 4,
-                      offset: const Offset(0, 2),
+                      offset: Offset(0, 2),
                     ),
                   ],
                 ),

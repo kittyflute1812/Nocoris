@@ -13,14 +13,12 @@ class AppTheme {
         useMaterial3: true,
         
         // カラースキーム
-        colorScheme: ColorScheme.light(
+        colorScheme: const ColorScheme.light(
           primary: AppColors.primary,
-          onPrimary: Colors.white,
           primaryContainer: AppColors.primaryLight,
           onPrimaryContainer: AppColors.primaryDark,
           
           secondary: AppColors.accent,
-          onSecondary: Colors.white,
           secondaryContainer: AppColors.accentLight,
           onSecondaryContainer: AppColors.accentDark,
           
@@ -28,11 +26,9 @@ class AppTheme {
           onTertiary: AppColors.textPrimary,
           
           error: AppColors.error,
-          onError: Colors.white,
           errorContainer: AppColors.errorLight,
           onErrorContainer: AppColors.errorDark,
           
-          surface: AppColors.surface,
           onSurface: AppColors.textPrimary,
           surfaceContainerHighest: AppColors.surfaceVariant,
           onSurfaceVariant: AppColors.textSecondary,
@@ -66,9 +62,8 @@ class AppTheme {
           color: AppColors.surface,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppConstants.cardBorderRadius),
-            side: BorderSide(
+            side: const BorderSide(
               color: AppColors.borderLight,
-              width: 1,
             ),
           ),
           margin: const EdgeInsets.symmetric(
@@ -182,12 +177,12 @@ class AppTheme {
         ),
         
         // BottomSheet テーマ
-        bottomSheetTheme: BottomSheetThemeData(
+        bottomSheetTheme: const BottomSheetThemeData(
           backgroundColor: AppColors.surface,
           surfaceTintColor: Colors.transparent,
           elevation: 8,
           shadowColor: AppColors.shadowDark,
-          shape: const RoundedRectangleBorder(
+          shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(
               top: Radius.circular(20),
             ),
@@ -257,7 +252,7 @@ class AppTheme {
   /// ダークモードのテーマ（将来的な拡張用）
   static ThemeData get dark => ThemeData(
         useMaterial3: true,
-        colorScheme: ColorScheme.dark(
+        colorScheme: const ColorScheme.dark(
           primary: AppColors.primaryLight,
           secondary: AppColors.accentLight,
           error: AppColors.errorLight,

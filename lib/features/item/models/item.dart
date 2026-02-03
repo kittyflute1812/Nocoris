@@ -16,9 +16,9 @@ class Item {
     required this.id,
     required this.name,
     required this.count,
-    this.icon,
     required this.createdAt,
     required this.updatedAt,
+    this.icon,
   }) : assert(count >= 0, 'Count must be non-negative') {
     _validateName(name);
   }
@@ -29,9 +29,9 @@ class Item {
     required this.id,
     required this.name,
     required this.count,
-    this.icon,
     required this.createdAt,
     required this.updatedAt,
+    this.icon,
   }) : assert(count >= 0, 'Count must be non-negative');
 
   /// カウントを1減らした新しいインスタンスを返す
@@ -101,8 +101,8 @@ class Item {
   /// - 空白のみ → "無名のアイテム"  
   /// - 長すぎる名前 → 最大長に切り詰め
   factory Item.fromJson(Map<String, dynamic> json) {
-    String rawName = json['name'] as String;
-    String sanitizedName = _sanitizeName(rawName);
+    final String rawName = json['name'] as String;
+    final String sanitizedName = _sanitizeName(rawName);
     
     return Item._internal(
       id: json['id'] as String,
@@ -143,7 +143,7 @@ class Item {
     }
     
     final now = DateTime.now();
-    final uuid = Uuid();
+    const uuid = Uuid();
     return Item(
       id: uuid.v4(),
       name: name,
