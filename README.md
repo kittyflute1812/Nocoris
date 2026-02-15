@@ -220,16 +220,61 @@ cat .flutter-version
 flutter version $(cat .flutter-version)
 ```
 
-3. **Lefthookのインストール（推奨）**
+3. **Lefthookのインストールとセットアップ（推奨）**
+
+Lefthookは、Git hooksを管理するツールです。コミット前やプッシュ前に自動的にコード品質チェックを実行します。
+
+#### インストール方法
+
+**macOS（Homebrew）:**
 ```bash
-# Homebrewでインストール（macOS）
 brew install lefthook
+```
 
-# または、他のプラットフォーム向けインストール方法
-# https://github.com/evilmartians/lefthook#installation
+**Linux:**
+```bash
+# Debian/Ubuntu
+curl -1sLf 'https://dl.cloudsmith.io/public/evilmartians/lefthook/setup.deb.sh' | sudo -E bash
+sudo apt install lefthook
 
-# Git hooksをセットアップ
+# Arch Linux
+yay -S lefthook
+```
+
+**Windows:**
+```powershell
+# Scoop
+scoop install lefthook
+
+# または、バイナリを直接ダウンロード
+# https://github.com/evilmartians/lefthook/releases
+```
+
+**その他のインストール方法:**
+- npm: `npm install -g @evilmartians/lefthook`
+- Go: `go install github.com/evilmartians/lefthook@latest`
+- 詳細: https://github.com/evilmartians/lefthook#installation
+
+#### セットアップ
+
+```bash
+# プロジェクトルートで実行
 lefthook install
+```
+
+これで以下のGit hooksが自動設定されます：
+- `pre-commit`: コミット前の品質チェック
+- `pre-push`: プッシュ前のテスト実行
+- `commit-msg`: コミットメッセージの検証
+
+#### 動作確認
+
+```bash
+# インストール確認
+lefthook version
+
+# 設定確認
+lefthook run pre-commit --verbose
 ```
 
 4. **依存パッケージのインストール**
@@ -249,22 +294,131 @@ cd ..
 プロジェクトには以下のGit hooksが自動設定されます：
 
 #### Pre-commit（コミット前）
-- ✅ `dart format` でコード整形チェック（自動修正）
-- ✅ `flutter analyze` で静的解析
-- ✅ Flutterバージョンチェック
+
+コミット時に自動実行されるチェック：
+
+1. **コードフォーマット** (`format-check`)
+   - 変更されたDartファイルを自動整形
+   - `dart format --set-exit-if-changed` を実行
+   - フォーマット済みのファイルは自動的にステージング
+
+2. **静的解析** (`analyze`)
+   - `flutter analyze --no-pub` を実行
+   - 警告やエラーがあればコミットを中断
+
+3. **バージョンチェック** (`version-check`)
+   - `.flutter-version` とローカル環境のFlutterバージョンを比較
+   - 不一致の場合は警告を表示
+
+**実行例:**
+```bash
+git commit -m "feat: 新機能を追加"
+# ↓ 自動実行
+# ✔️ format-check (0.5s)
+# ✔️ analyze (2.3s)
+# ✔️ version-check (0.1s)
+```
 
 #### Pre-push（プッシュ前）
-- ✅ `flutter test` で全テスト実行
 
-#### Commit-msg（コミットメッセージ）
-- ✅ Conventional Commits形式の検証
-  - `feat:`, `fix:`, `docs:`, `style:`, `refactor:`, `test:`, `chore:`
+プッシュ時に自動実行されるチェック：
 
-Hooksを一時的に無効化する場合：
+1. **全テスト実行** (`test`)
+   - `flutter test` を実行
+   - テストが失敗するとプッシュを中断
+   - 122個のテストが実行されます（約7秒）
+
+**実行例:**
 ```bash
-LEFTHOOK=0 git commit -m "message"  # 全てのhooksをスキップ
+git push
+# ↓ 自動実行
+# ✔️ test (7.5s)
+# All tests passed!
+```
+
+#### Commit-msg（コミットメッセージ検証）
+
+コミットメッセージが以下の形式に従っているかチェック：
+
+**Conventional Commits形式:**
+```
+<type>: <description>
+
+例:
+feat: 新機能を追加
+fix: バグを修正
+docs: ドキュメントを更新
+style: コードフォーマットを修正
+refactor: リファクタリング
+test: テストを追加
+chore: ビルドプロセスやツールの変更
+perf: パフォーマンス改善
+ci: CI/CD設定の変更
+build: ビルドシステムの変更
+revert: 変更の取り消し
+```
+
+**スコープ付き（オプション）:**
+```
+feat(item): アイテム削除機能を追加
+fix(ui): ボタンの配置を修正
+```
+
+#### Hooksを一時的に無効化する方法
+
+開発中に一時的にhooksをスキップしたい場合：
+
+```bash
+# 全てのhooksをスキップ
+LEFTHOOK=0 git commit -m "WIP: 作業中"
+LEFTHOOK=0 git push
+
+# 特定のhookのみスキップ
 git commit --no-verify              # pre-commitをスキップ
 git push --no-verify                # pre-pushをスキップ
+
+# 特定のコマンドのみスキップ
+LEFTHOOK_EXCLUDE=test git push      # テストをスキップしてプッシュ
+```
+
+#### Hooksの設定ファイル
+
+`lefthook.yml` でhooksの設定をカスタマイズできます：
+
+```yaml
+pre-commit:
+  parallel: true  # 並列実行で高速化
+  commands:
+    format-check:
+      glob: "*.dart"
+      run: dart format --set-exit-if-changed {staged_files}
+      stage_fixed: true  # 修正したファイルを自動ステージング
+```
+
+#### トラブルシューティング
+
+**Hooksが実行されない場合:**
+```bash
+# Hooksを再インストール
+lefthook install
+
+# 設定を確認
+lefthook run pre-commit --verbose
+```
+
+**Flutterバージョン警告が出る場合:**
+```bash
+# 推奨バージョンに切り替え
+flutter version $(cat .flutter-version)
+```
+
+**テストが遅い場合:**
+```bash
+# 特定のテストのみ実行（開発中）
+flutter test test/features/item/
+
+# プッシュ時のテストをスキップ（緊急時のみ）
+git push --no-verify
 ```
 
 ### Kiro Hooksについて
