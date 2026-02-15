@@ -6,6 +6,166 @@ inclusion: always
 
 このプロジェクトのFlutter開発における包括的なガイドラインとベストプラクティスです。
 
+## 0. Dartコーディング規約（必須遵守事項）
+
+### 0.1 厳格なコード品質基準
+
+**🚨 重要**: 以下の規約は必須遵守事項です。違反するコードは受け入れられません。
+
+#### 実装時の必須チェック項目
+- [ ] `flutter analyze` で警告ゼロを確認
+- [ ] `getDiagnostics` ツールで診断結果をチェック
+- [ ] 全てのlintルールをクリア
+- [ ] 型安全性を最優先
+- [ ] パフォーマンスを考慮した実装
+
+### 0.2 禁止事項と推奨事項
+
+#### ❌ 禁止事項
+```dart
+// ❌ print()の使用禁止
+print('Debug message');
+
+// ❌ 型注釈なしの変数宣言
+var items = <Item>[];
+
+// ❌ 不要なnewキーワード
+var item = new Item();
+
+// ❌ 非constコンストラクタ（可能な場合）
+child: Text('Hello')
+
+// ❌ 未使用のimport
+import 'package:flutter/material.dart'; // 使用されていない場合
+```
+
+#### ✅ 推奨事項
+```dart
+// ✅ loggerパッケージを使用
+logger.d('Debug message');
+logger.e('Error occurred', error);
+
+// ✅ 適切な型注釈
+final List<Item> items = <Item>[];
+
+// ✅ newキーワード省略
+final item = Item();
+
+// ✅ constコンストラクタを積極使用
+child: const Text('Hello')
+
+// ✅ 必要なimportのみ
+import 'package:flutter/material.dart';
+```
+
+### 0.3 ログ出力ルール
+
+#### Logger使用方法
+```dart
+import 'package:logger/logger.dart';
+
+final logger = Logger();
+
+// デバッグ情報
+logger.d('Debug message');
+
+// 情報
+logger.i('Information message');
+
+// 警告
+logger.w('Warning message');
+
+// エラー
+logger.e('Error occurred', error, stackTrace);
+```
+
+#### ログレベル設定
+```dart
+// 本番環境では適切なログレベルを設定
+final logger = Logger(
+  level: kDebugMode ? Level.debug : Level.warning,
+);
+```
+
+### 0.4 型安全性とNull安全性
+
+#### 必須ルール
+```dart
+// ✅ 戻り値の型を明示
+Future<bool> updateItem(String id) async {
+  // 実装
+}
+
+// ✅ null認識演算子を活用
+final name = item?.name ?? 'Unknown';
+
+// ✅ late使用時は初期化を保証
+late final ItemService _itemService;
+
+// ❌ null assertion(!)の乱用を避ける
+// final name = item!.name; // 危険
+```
+
+### 0.5 パフォーマンス最適化
+
+#### 必須実装パターン
+```dart
+// ✅ constコンストラクタの積極使用
+class ItemCard extends StatelessWidget {
+  const ItemCard({super.key, required this.item});
+  
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: const Text('Static text'), // const使用
+    );
+  }
+}
+
+// ✅ ListView.builderの使用
+ListView.builder(
+  itemCount: items.length,
+  itemBuilder: (context, index) => ItemCard(item: items[index]),
+)
+
+// ✅ 適切なリソース管理
+class _MyWidgetState extends State<MyWidget> {
+  late final TextEditingController _controller;
+  
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController();
+  }
+  
+  @override
+  void dispose() {
+    _controller.dispose(); // 必須
+    super.dispose();
+  }
+}
+```
+
+### 0.6 実装品質チェックリスト
+
+#### コード提出前の必須確認事項
+1. **静的解析**: `flutter analyze` で警告ゼロ
+2. **診断チェック**: `getDiagnostics` で問題なし
+3. **フォーマット**: `dart format` でコード整形
+4. **テスト**: 関連するテストが全て通過
+5. **パフォーマンス**: 不要な再描画やメモリリークなし
+6. **型安全性**: null安全性とtype safetyを確保
+7. **リソース管理**: 適切なdisposeとクリーンアップ
+
+#### 実装時の心構え
+- **品質第一**: 動作するだけでなく、保守しやすいコードを書く
+- **一貫性**: プロジェクト全体で統一されたスタイルを維持
+- **可読性**: 他の開発者が理解しやすいコードを心がける
+- **パフォーマンス**: ユーザー体験を最優先に考慮
+- **安全性**: null安全性と型安全性を徹底
+
+**これらの規約に従わないコードは、品質基準を満たさないため受け入れられません。**
+
 ## 1. コード構成と構造
 
 ### 1.1 ディレクトリ構造のベストプラクティス

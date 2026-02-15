@@ -8,8 +8,7 @@ class ErrorView extends StatelessWidget {
   final VoidCallback? onRetry;
 
   const ErrorView({
-    super.key,
-    required this.message,
+    required this.message, super.key,
     this.onRetry,
   });
 

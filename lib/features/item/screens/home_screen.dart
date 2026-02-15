@@ -262,15 +262,15 @@ class _DeleteConfirmationDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Row(
+      title: const Row(
         children: [
           Icon(
             Icons.warning_amber_rounded,
             color: AppColors.error,
             size: 28,
           ),
-          const SizedBox(width: 12),
-          const Text(AppStrings.deleteItemTitle),
+          SizedBox(width: 12),
+          Text(AppStrings.deleteItemTitle),
         ],
       ),
       content: Text(AppStrings.deleteItemMessage(itemName)),

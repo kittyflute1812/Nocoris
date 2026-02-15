@@ -56,7 +56,6 @@ void main() {
             Item.create(
               name: invalidName,
               initialCount: 0,
-              icon: null,
             );
             
             // 例外が発生しなかった場合はプロパティ違反
@@ -75,7 +74,7 @@ void main() {
         
         for (final name in invalidNames) {
           expect(
-            () => Item.create(name: name, initialCount: 0, icon: null),
+            () => Item.create(name: name, initialCount: 0),
             throwsA(isA<ArgumentError>()),
             reason: 'Invalid name "$name" should be rejected',
           );
@@ -117,7 +116,6 @@ void main() {
             final item = Item.create(
               name: name,
               initialCount: 0,
-              icon: null,
             );
             
             // プロパティ検証: nullアイコンが正しく設定されている
@@ -142,7 +140,6 @@ void main() {
             final item = Item.create(
               name: name,
               initialCount: count,
-              icon: null,
             );
             
             // プロパティ検証: 設定した数量が正しく設定されている
@@ -165,7 +162,6 @@ void main() {
             final item = Item.create(
               name: name,
               initialCount: 0,
-              icon: null,
             );
             
             // プロパティ検証: 数量0が正しく設定されている
@@ -187,7 +183,6 @@ void main() {
             final item = Item.create(
               name: name,
               initialCount: count,
-              icon: null,
             );
             
             // プロパティ検証: 大きな数量が正しく設定されている
