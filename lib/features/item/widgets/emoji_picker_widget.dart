@@ -3,14 +3,15 @@ import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/foundation.dart' as foundation;
 
 /// 絵文字ピッカーウィジェット
-/// 
+///
 /// アイテムのアイコンとして使用する絵文字を選択するためのウィジェット
 class EmojiPickerWidget extends StatelessWidget {
   final Function(String) onEmojiSelected;
   final String? selectedEmoji;
 
   const EmojiPickerWidget({
-    required this.onEmojiSelected, super.key,
+    required this.onEmojiSelected,
+    super.key,
     this.selectedEmoji,
   });
 
@@ -32,7 +33,8 @@ class EmojiPickerWidget extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                    color:
+                        Theme.of(context).colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
@@ -62,7 +64,8 @@ class EmojiPickerWidget extends StatelessWidget {
                 iconColorSelected: Theme.of(context).colorScheme.primary,
               ),
               bottomActionBarConfig: BottomActionBarConfig(
-                buttonColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                buttonColor:
+                    Theme.of(context).colorScheme.surfaceContainerHighest,
                 buttonIconColor: Theme.of(context).colorScheme.onSurface,
               ),
               searchViewConfig: SearchViewConfig(
@@ -77,7 +80,7 @@ class EmojiPickerWidget extends StatelessWidget {
 }
 
 /// 絵文字選択ボトムシート
-/// 
+///
 /// 絵文字ピッカーをボトムシートとして表示するヘルパー関数
 Future<String?> showEmojiPickerBottomSheet({
   required BuildContext context,
@@ -132,4 +135,3 @@ Future<String?> showEmojiPickerBottomSheet({
     ),
   );
 }
-

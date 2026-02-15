@@ -2,20 +2,20 @@
 class PropertyTestConfig {
   /// デフォルトの反復回数（最低100回）
   static const int defaultIterations = 100;
-  
+
   /// 最大反復回数
   static const int maxIterations = 1000;
-  
+
   /// 短時間テスト用の反復回数
   static const int quickIterations = 50;
-  
+
   /// 詳細テスト用の反復回数
   static const int thoroughIterations = 500;
 
   /// プロパティテストのタグ設定
   static const String featureTag = 'Feature: nocoris-item-management';
   static const String propertyTestTag = 'property-based-test';
-  
+
   /// 各プロパティの定義
   static const Map<int, String> propertyDescriptions = {
     1: 'アイテム作成によるリスト拡張',
@@ -54,7 +54,7 @@ class PropertyTestConfig {
     if (description == null) {
       throw ArgumentError('Invalid property number: $propertyNumber');
     }
-    
+
     return [
       'nocoris-item-management',
       'property-$propertyNumber',

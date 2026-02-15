@@ -4,7 +4,7 @@ import '../models/item.dart';
 import '../../../core/services/storage_service.dart';
 
 /// アイテムのビジネスロジックを管理するサービス
-/// 
+///
 /// アイテムの作成、更新、削除、カウント操作を提供します。
 /// ChangeNotifierを継承し、状態変更時にリスナーに通知します。
 class ItemService extends ChangeNotifier {
@@ -45,7 +45,8 @@ class ItemService extends ChangeNotifier {
     if (name.trim().isEmpty) {
       throw ArgumentError('Item name cannot be only whitespace');
     }
-    if (name.length > 100) { // AppConstants.maxNameLength
+    if (name.length > 100) {
+      // AppConstants.maxNameLength
       throw ArgumentError('Item name cannot exceed 100 characters');
     }
   }
@@ -54,8 +55,9 @@ class ItemService extends ChangeNotifier {
   Future<Item> createItem(String name, int initialCount, {String? icon}) async {
     // 名前のバリデーション
     _validateItemName(name);
-    
-    final item = Item.create(name: name, initialCount: initialCount, icon: icon);
+
+    final item =
+        Item.create(name: name, initialCount: initialCount, icon: icon);
     _items.add(item);
     await _saveItems();
     notifyListeners();
@@ -63,7 +65,8 @@ class ItemService extends ChangeNotifier {
   }
 
   /// アイテムのカウントを更新
-  Future<bool> updateItem(String id, int count, {String? name, Object? icon = _iconSentinel}) async {
+  Future<bool> updateItem(String id, int count,
+      {String? name, Object? icon = _iconSentinel}) async {
     final index = _items.indexWhere((item) => item.id == id);
     if (index == -1) return false;
 
@@ -75,7 +78,8 @@ class ItemService extends ChangeNotifier {
     _items[index] = _items[index].copyWith(
       name: name,
       count: count,
-      icon: identical(icon, _iconSentinel) ? _items[index].icon : icon as String?,
+      icon:
+          identical(icon, _iconSentinel) ? _items[index].icon : icon as String?,
       updatedAt: DateTime.now(),
     );
     await _saveItems();

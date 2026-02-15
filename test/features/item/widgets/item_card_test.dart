@@ -41,7 +41,7 @@ void main() {
 
     testWidgets('アイコン付きItemCardが正しく表示されること', (WidgetTester tester) async {
       final itemWithIcon = testItem.copyWith(icon: '🐿️');
-      
+
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -64,8 +64,7 @@ void main() {
       expect(find.byIcon(Icons.add), findsOneWidget);
     });
 
-    testWidgets('count=0の時にdecrementボタンが無効化されること',
-        (WidgetTester tester) async {
+    testWidgets('count=0の時にdecrementボタンが無効化されること', (WidgetTester tester) async {
       testItem = Item(
         id: '1',
         name: 'Test Item',
@@ -91,16 +90,17 @@ void main() {
       // 新しいデザインではInkWellを使用しているため、
       // onTapがnullかどうかを確認
       final decrementContainer = tester.widget<InkWell>(
-        find.ancestor(
-          of: find.byIcon(Icons.remove),
-          matching: find.byType(InkWell),
-        ).first,
+        find
+            .ancestor(
+              of: find.byIcon(Icons.remove),
+              matching: find.byType(InkWell),
+            )
+            .first,
       );
       expect(decrementContainer.onTap, null);
     });
 
-    testWidgets('減算・加算ボタンのコールバックが正しく呼ばれること',
-        (WidgetTester tester) async {
+    testWidgets('減算・加算ボタンのコールバックが正しく呼ばれること', (WidgetTester tester) async {
       bool decrementCalled = false;
       bool incrementCalled = false;
 
@@ -129,8 +129,7 @@ void main() {
       expect(incrementCalled, true);
     });
 
-    testWidgets('メニューボタンのコールバックが正しく呼ばれること',
-        (WidgetTester tester) async {
+    testWidgets('メニューボタンのコールバックが正しく呼ばれること', (WidgetTester tester) async {
       bool editCalled = false;
       bool deleteCalled = false;
 
@@ -168,4 +167,3 @@ void main() {
     });
   });
 }
-

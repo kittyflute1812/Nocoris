@@ -4,7 +4,7 @@ import '../helpers/property_test_framework.dart';
 import '../helpers/property_test_helpers.dart';
 
 /// データモデルのプロパティベーステスト
-/// 
+///
 /// このファイルは設計書で定義された最初の4つの正確性プロパティを実装します：
 /// - プロパティ 1: アイテム作成によるリスト拡張
 /// - プロパティ 2: 無効入力の拒否
@@ -25,14 +25,15 @@ void main() {
               initialCount: count,
               icon: icon,
             );
-            
+
             // アイテムをリストに追加
             final newItems = [createdItem];
-            
+
             // プロパティ検証: リストの長さが1で、作成したアイテムが含まれる
             final lengthCorrect = newItems.length == 1;
-            final itemInList = newItems.any((item) => item.id == createdItem.id);
-            
+            final itemInList =
+                newItems.any((item) => item.id == createdItem.id);
+
             return lengthCorrect && itemInList;
           } catch (e) {
             // 有効な入力で例外が発生した場合はプロパティ違反
@@ -57,7 +58,7 @@ void main() {
               name: invalidName,
               initialCount: 0,
             );
-            
+
             // 例外が発生しなかった場合はプロパティ違反
             return false;
           } catch (e) {
@@ -71,7 +72,7 @@ void main() {
       // プロパティ 2の拡張: 様々な無効入力パターンのテスト
       test('Property 2: 空文字列や空白文字のみの名前は拒否される', () {
         final invalidNames = ['', ' ', '  ', '\t', '\n', '   \t  \n  '];
-        
+
         for (final name in invalidNames) {
           expect(
             () => Item.create(name: name, initialCount: 0),
@@ -95,7 +96,7 @@ void main() {
               initialCount: 0,
               icon: icon,
             );
-            
+
             // プロパティ検証: 設定したアイコンが正しく関連付けられている
             return item.icon == icon;
           } catch (e) {
@@ -117,7 +118,7 @@ void main() {
               name: name,
               initialCount: 0,
             );
-            
+
             // プロパティ検証: nullアイコンが正しく設定されている
             return item.icon == null;
           } catch (e) {
@@ -141,7 +142,7 @@ void main() {
               name: name,
               initialCount: count,
             );
-            
+
             // プロパティ検証: 設定した数量が正しく設定されている
             return item.count == count;
           } catch (e) {
@@ -163,7 +164,7 @@ void main() {
               name: name,
               initialCount: 0,
             );
-            
+
             // プロパティ検証: 数量0が正しく設定されている
             return item.count == 0;
           } catch (e) {
@@ -184,7 +185,7 @@ void main() {
               name: name,
               initialCount: count,
             );
-            
+
             // プロパティ検証: 大きな数量が正しく設定されている
             return item.count == count;
           } catch (e) {
@@ -193,7 +194,8 @@ void main() {
           }
         },
         generator1: PropertyTestHelpers.generateValidItemName,
-        generator2: () => PropertyTestHelpers.generateValidCount() + 1000, // より大きな値
+        generator2: () =>
+            PropertyTestHelpers.generateValidCount() + 1000, // より大きな値
       );
     });
   });

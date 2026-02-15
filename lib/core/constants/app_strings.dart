@@ -38,4 +38,3 @@ class AppStrings {
   static String itemNameSemantics(String name) => 'アイテム名: $name';
   static String remainingCountSemantics(int count) => 'のこり: $count個';
 }
-

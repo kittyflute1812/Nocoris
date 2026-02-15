@@ -9,7 +9,8 @@ class EmptyStateView extends StatelessWidget {
   final IconData? icon;
 
   const EmptyStateView({
-    required this.message, super.key,
+    required this.message,
+    super.key,
     this.actionLabel,
     this.onAction,
     this.icon,
@@ -46,4 +47,3 @@ class EmptyStateView extends StatelessWidget {
     );
   }
 }
-

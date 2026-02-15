@@ -30,8 +30,7 @@ class TestHelpers {
     when(() => mockStorage.saveItems(any())).thenAnswer((_) async => true);
 
     // StorageService.loadJsonListのモック（他のテストで使用される可能性があるため）
-    when(() => mockStorage.loadJsonList(any()))
-        .thenReturn(initialItems ?? []);
+    when(() => mockStorage.loadJsonList(any())).thenReturn(initialItems ?? []);
 
     // StorageService.saveJsonListのモック（他のテストで使用される可能性があるため）
     when(() => mockStorage.saveJsonList(any(), any()))
