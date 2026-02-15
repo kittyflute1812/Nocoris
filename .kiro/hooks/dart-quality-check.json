@@ -1,0 +1,15 @@
+{
+    "name": "Dart品質チェック（保存時）",
+    "version": "1.0.0",
+    "description": "Dartファイル保存時に自動でanalyzeとformatを実行して品質を保証",
+    "when": {
+        "type": "fileEdited",
+        "patterns": [
+            "*.dart"
+        ]
+    },
+    "then": {
+        "type": "askAgent",
+        "prompt": "保存されたファイルに対して以下を実行してください：\n1. getDiagnosticsでエラーと警告をチェック\n2. エラーがあれば自動修正を提案\n3. dart formatで整形\n4. 結果を簡潔に報告"
+    }
+}

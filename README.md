@@ -312,6 +312,7 @@ open coverage/html/index.html
 - プライベートメンバーは `_` で始める
 - 非同期処理には `async/await` を使用
 - エラーハンドリングは `try-catch` で実装
+- **詳細**: `.kiro/steering/dart-coding-standards.md` を参照
 
 ### テスト戦略
 
@@ -326,6 +327,74 @@ open coverage/html/index.html
 - `develop` ブランチ: 開発中の機能統合
 - フィーチャーブランチ: `feature/機能名` で作成
 - バグ修正: `fix/バグ名` で作成
+
+## ⚙️ Kiro IDE設定
+
+このプロジェクトはKiro IDEの推奨設定を含んでいます。
+
+### Steering Files（自動適用ガイドライン）
+
+プロジェクト固有のガイドラインが `.kiro/steering/` に配置されています：
+
+- **dart-coding-standards.md**: Dartコーディング規約（厳格版）
+  - Logger使用ルール（print禁止）
+  - Const使用ルール
+  - 型安全性とNull安全性
+  - Import整理ルール
+
+- **common-issues-solutions.md**: よくあるエラーと解決策
+  - コンパイルエラーの対処法
+  - Lint警告の解決方法
+  - 実行時エラーのデバッグ方法
+
+- **flutter-development-guidelines.md**: Flutter開発ガイドライン
+- **nocoris-project-guidelines.md**: Nocorisプロジェクト固有ガイドライン
+- **task-execution-guidelines.md**: タスク実行ガイドライン
+
+### Hooks（自動化）
+
+`.kiro/hooks/` に配置された自動化フックが開発をサポートします：
+
+- **dart-quality-check.json**: Dartファイル保存時に自動品質チェック
+  - getDiagnosticsでエラーチェック
+  - 自動修正提案
+  - dart formatで整形
+
+- **test-template-generator.json**: テストファイル作成時にテンプレート生成
+  - プロジェクト規約に準拠したテンプレート
+  - 適切なimport文を自動生成
+  - setUp/tearDownメソッドを含む
+
+### 品質チェックツール
+
+コード品質を保証するための設定：
+
+- **analysis_options.yaml**: 厳格なlintルール設定
+  - `avoid_print: error` - print()使用を禁止
+  - `prefer_const_constructors: true` - constコンストラクタを推奨
+  - `require_trailing_commas: true` - トレーリングカンマを必須化
+
+- **.vscode/settings.json**: VS Code推奨設定
+  - 保存時の自動フォーマット
+  - import自動整理
+  - Dart固有の設定
+
+### CI/CD
+
+GitHub Actionsによる自動テスト・ビルド：
+
+- **flutter-ci.yml**: プッシュ・PR時に自動実行
+  - コード解析（flutter analyze）
+  - フォーマットチェック（dart format）
+  - テスト実行（flutter test）
+  - Android/iOSビルド
+
+### 開発時の推奨ワークフロー
+
+1. **コード作成**: Kiroのステアリングファイルが自動的にガイド
+2. **保存時**: Hooksが自動的に品質チェックを実行
+3. **コミット前**: `flutter analyze` と `flutter test` で最終確認
+4. **PR作成**: GitHub Actionsが自動的にCI/CDを実行
 
 ## 📝 ライセンス
 
