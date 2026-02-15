@@ -21,39 +21,39 @@ linter:
     unnecessary_new: true                          # 不要なnewキーワードを除去
     prefer_final_locals: true                      # ローカル変数はfinalを優先
     prefer_final_in_for_each: true                 # for-eachでfinalを使用
-
+    
     # === 型安全性とコード品質 ===
     always_declare_return_types: true              # 戻り値の型を明示
     prefer_typing_uninitialized_variables: true    # 未初期化変数の型注釈
     avoid_types_as_parameter_names: true           # パラメータ名に型名使用禁止
     avoid_unused_constructor_parameters: true      # 未使用コンストラクタパラメータ禁止
     prefer_single_quotes: true                     # シングルクォート優先
-
+    
     # === パフォーマンスとメモリ管理 ===
     avoid_function_literals_in_foreach_calls: true # forEach内での関数リテラル回避
     prefer_for_elements_to_map_fromIterable: true  # Map.fromIterableよりfor要素優先
     prefer_collection_literals: true               # コレクションリテラル優先
     prefer_is_empty: true                          # length == 0 より isEmpty使用
     prefer_is_not_empty: true                      # length > 0 より isNotEmpty使用
-
+    
     # === 可読性とメンテナンス性 ===
     always_put_required_named_parameters_first: true  # required パラメータを最初に
     avoid_redundant_argument_values: true         # 冗長な引数値を回避
     prefer_adjacent_string_concatenation: true     # 隣接文字列連結を優先
     prefer_interpolation_to_compose_strings: true # 文字列補間を優先
     unnecessary_string_interpolations: true       # 不要な文字列補間を除去
-
+    
     # === Null安全性 ===
     avoid_null_checks_in_equality_operators: true # 等価演算子でのnullチェック回避
     prefer_null_aware_operators: true             # null認識演算子を優先
     unnecessary_null_in_if_null_operators: true   # if-null演算子の不要なnull除去
-
+    
     # === Flutter固有のベストプラクティス ===
     use_key_in_widget_constructors: true          # Widgetコンストラクタでのkey使用
     prefer_const_constructors_in_immutables: true # 不変クラスでのconstコンストラクタ
     sized_box_for_whitespace: true                # 空白にはSizedBoxを使用
     avoid_unnecessary_containers: true            # 不要なContainerを回避
-
+    
     # === その他の品質向上ルール ===
     avoid_empty_else: true                         # 空のelse文を回避
     avoid_returning_null_for_void: true           # void関数でのnull返却禁止
