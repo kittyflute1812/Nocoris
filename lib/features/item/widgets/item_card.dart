@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import '../models/item.dart';
+
 import '../../../core/constants/app_constants.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/theme/app_colors.dart';
+import '../models/item.dart';
 
 /// アイテムの情報を表示し、基本的な操作を提供するカードウィジェット
 ///
@@ -20,7 +21,12 @@ class ItemCard extends StatelessWidget {
   final int index;
 
   const ItemCard({
-    required this.item, required this.onDecrement, required this.onIncrement, required this.onEdit, required this.onDelete, super.key,
+    required this.item,
+    required this.onDecrement,
+    required this.onIncrement,
+    required this.onEdit,
+    required this.onDelete,
+    super.key,
     this.index = 0,
   });
 
@@ -28,7 +34,7 @@ class ItemCard extends StatelessWidget {
   Widget build(BuildContext context) {
     // インデックスに基づいてカードの背景色を変える
     final backgroundColor = AppColors.getCardBackground(index);
-    
+
     return Container(
       margin: const EdgeInsets.symmetric(
         horizontal: AppConstants.defaultPadding,
@@ -36,11 +42,10 @@ class ItemCard extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         color: backgroundColor,
-        borderRadius: BorderRadius.circular(AppConstants.cardBorderRadius * 1.5),
-        border: Border.all(
-          color: AppColors.borderLight,
-          width: 1.5,
+        borderRadius: BorderRadius.circular(
+          AppConstants.cardBorderRadius * 1.5,
         ),
+        border: Border.all(color: AppColors.borderLight, width: 1.5),
         boxShadow: const [
           BoxShadow(
             color: AppColors.shadow,
@@ -54,11 +59,7 @@ class ItemCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _ItemCardHeader(
-              item: item,
-              onEdit: onEdit,
-              onDelete: onDelete,
-            ),
+            _ItemCardHeader(item: item, onEdit: onEdit, onDelete: onDelete),
             const SizedBox(height: AppConstants.defaultSpacing * 1.5),
             _ItemCardCounter(
               item: item,
@@ -97,10 +98,7 @@ class _ItemCardHeader extends StatelessWidget {
             decoration: BoxDecoration(
               color: AppColors.surface,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: AppColors.borderLight,
-                width: 1.5,
-              ),
+              border: Border.all(color: AppColors.borderLight, width: 1.5),
               boxShadow: const [
                 BoxShadow(
                   color: AppColors.shadowLight,
@@ -110,10 +108,7 @@ class _ItemCardHeader extends StatelessWidget {
               ],
             ),
             child: Center(
-              child: Text(
-                item.icon!,
-                style: const TextStyle(fontSize: 28),
-              ),
+              child: Text(item.icon!, style: const TextStyle(fontSize: 28)),
             ),
           ),
           const SizedBox(width: 14),
@@ -122,18 +117,15 @@ class _ItemCardHeader extends StatelessWidget {
           child: Text(
             item.name,
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
-                  letterSpacing: 0.2,
-                ),
+              fontWeight: FontWeight.w600,
+              color: AppColors.textPrimary,
+              letterSpacing: 0.2,
+            ),
             overflow: TextOverflow.ellipsis,
             semanticsLabel: AppStrings.itemNameSemantics(item.name),
           ),
         ),
-        _ItemCardMenu(
-          onEdit: onEdit,
-          onDelete: onDelete,
-        ),
+        _ItemCardMenu(onEdit: onEdit, onDelete: onDelete),
       ],
     );
   }
@@ -144,22 +136,14 @@ class _ItemCardMenu extends StatelessWidget {
   final VoidCallback onEdit;
   final VoidCallback onDelete;
 
-  const _ItemCardMenu({
-    required this.onEdit,
-    required this.onDelete,
-  });
+  const _ItemCardMenu({required this.onEdit, required this.onDelete});
 
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton<String>(
       tooltip: AppStrings.itemMenuTooltip,
-      icon: const Icon(
-        Icons.more_vert,
-        color: AppColors.textSecondary,
-      ),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      icon: const Icon(Icons.more_vert, color: AppColors.textSecondary),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       onSelected: (value) {
         switch (value) {
           case 'edit':
@@ -168,28 +152,29 @@ class _ItemCardMenu extends StatelessWidget {
             onDelete();
         }
       },
-      itemBuilder: (context) => [
-        const PopupMenuItem(
-          value: 'edit',
-          child: Row(
-            children: [
-              Icon(Icons.edit, size: 20, color: AppColors.primary),
-              SizedBox(width: 12),
-              Text(AppStrings.edit),
-            ],
-          ),
-        ),
-        const PopupMenuItem(
-          value: 'delete',
-          child: Row(
-            children: [
-              Icon(Icons.delete, size: 20, color: AppColors.error),
-              SizedBox(width: 12),
-              Text(AppStrings.delete),
-            ],
-          ),
-        ),
-      ],
+      itemBuilder:
+          (context) => [
+            const PopupMenuItem(
+              value: 'edit',
+              child: Row(
+                children: [
+                  Icon(Icons.edit, size: 20, color: AppColors.primary),
+                  SizedBox(width: 12),
+                  Text(AppStrings.edit),
+                ],
+              ),
+            ),
+            const PopupMenuItem(
+              value: 'delete',
+              child: Row(
+                children: [
+                  Icon(Icons.delete, size: 20, color: AppColors.error),
+                  SizedBox(width: 12),
+                  Text(AppStrings.delete),
+                ],
+              ),
+            ),
+          ],
     );
   }
 }
@@ -213,34 +198,28 @@ class _ItemCardCounter extends StatelessWidget {
       children: [
         // 残数表示
         Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 8,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
             color: AppColors.surface,
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: AppColors.borderLight,
-              width: 1.5,
-            ),
+            border: Border.all(color: AppColors.borderLight, width: 1.5),
           ),
           child: Row(
             children: [
               Text(
                 '${AppStrings.remainingCount}: ',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: AppColors.textSecondary,
-                      fontWeight: FontWeight.w500,
-                    ),
+                  color: AppColors.textSecondary,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
               Text(
                 '${item.count}',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 24,
-                    ),
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 24,
+                ),
                 semanticsLabel: AppStrings.remainingCountSemantics(item.count),
               ),
             ],
@@ -289,15 +268,16 @@ class _CounterButtons extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: count > 0 ? AppColors.primary : AppColors.borderLight,
                   shape: BoxShape.circle,
-                  boxShadow: count > 0
-                      ? const [
-                          BoxShadow(
-                            color: AppColors.shadow,
-                            blurRadius: 4,
-                            offset: Offset(0, 2),
-                          ),
-                        ]
-                      : null,
+                  boxShadow:
+                      count > 0
+                          ? const [
+                            BoxShadow(
+                              color: AppColors.shadow,
+                              blurRadius: 4,
+                              offset: Offset(0, 2),
+                            ),
+                          ]
+                          : null,
                 ),
                 child: Icon(
                   Icons.remove,
@@ -332,11 +312,7 @@ class _CounterButtons extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: const Icon(
-                  Icons.add,
-                  color: Colors.white,
-                  size: 24,
-                ),
+                child: const Icon(Icons.add, color: Colors.white, size: 24),
               ),
             ),
           ),
