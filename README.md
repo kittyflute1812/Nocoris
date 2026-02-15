@@ -197,10 +197,11 @@ await tester.pumpWidget(
 
 ### 必要条件
 
-- Flutter SDK (v3.29.3以上)
-- Dart SDK (v3.7.2以上)
+- Flutter SDK (バージョンは `.flutter-version` ファイルを参照)
+- Dart SDK (v3.5.0以上)
 - Xcode 15以上（iOS開発用）
 - CocoaPods（iOS依存関係管理）
+- Lefthook（Git hooks管理）
 
 ### インストール手順
 
@@ -210,17 +211,73 @@ git clone https://github.com/kittyflute1812/Nocoris.git
 cd Nocoris
 ```
 
-2. **依存パッケージのインストール**
+2. **Flutterバージョンの確認と設定**
+```bash
+# プロジェクトで使用するFlutterバージョンを確認
+cat .flutter-version
+
+# Flutterバージョンを切り替え（必要に応じて）
+flutter version $(cat .flutter-version)
+```
+
+3. **Lefthookのインストール（推奨）**
+```bash
+# Homebrewでインストール（macOS）
+brew install lefthook
+
+# または、他のプラットフォーム向けインストール方法
+# https://github.com/evilmartians/lefthook#installation
+
+# Git hooksをセットアップ
+lefthook install
+```
+
+4. **依存パッケージのインストール**
 ```bash
 flutter pub get
 ```
 
-3. **iOS依存関係のインストール**
+5. **iOS依存関係のインストール**
 ```bash
 cd ios
 pod install
 cd ..
 ```
+
+### Lefthook（Git Hooks）について
+
+プロジェクトには以下のGit hooksが自動設定されます：
+
+#### Pre-commit（コミット前）
+- ✅ `dart format` でコード整形チェック（自動修正）
+- ✅ `flutter analyze` で静的解析
+- ✅ Flutterバージョンチェック
+
+#### Pre-push（プッシュ前）
+- ✅ `flutter test` で全テスト実行
+
+#### Commit-msg（コミットメッセージ）
+- ✅ Conventional Commits形式の検証
+  - `feat:`, `fix:`, `docs:`, `style:`, `refactor:`, `test:`, `chore:`
+
+Hooksを一時的に無効化する場合：
+```bash
+LEFTHOOK=0 git commit -m "message"  # 全てのhooksをスキップ
+git commit --no-verify              # pre-commitをスキップ
+git push --no-verify                # pre-pushをスキップ
+```
+
+### Kiro Hooksについて
+
+Kiro IDEには以下の自動化フックが設定されています：
+
+- **dart-quality-check**: Dartファイル保存時に自動品質チェック
+- **test-template-generator**: テストファイル作成時にテンプレート生成
+- **flutter-version-sync**: .flutter-version変更時に同期確認
+- **pre-commit-quality**: コミット前品質チェック（手動トリガー）
+- **ci-local-check**: CI/CDローカル検証（手動トリガー）
+
+手動トリガーのhooksは、Kiro IDEの「Agent Hooks」ビューから実行できます。
 
 ## 🎮 実行方法
 
@@ -384,17 +441,51 @@ open coverage/html/index.html
 GitHub Actionsによる自動テスト・ビルド：
 
 - **flutter-ci.yml**: プッシュ・PR時に自動実行
+  - Flutterバージョンは `.flutter-version` から自動読み込み
   - コード解析（flutter analyze）
   - フォーマットチェック（dart format）
   - テスト実行（flutter test）
   - Android/iOSビルド
 
+### バージョン管理
+
+Flutterバージョンは `.flutter-version` ファイルで一元管理されています：
+
+```bash
+# 現在のバージョンを確認
+cat .flutter-version
+
+# バージョンを更新する場合
+echo "3.38.7" > .flutter-version
+
+# CI/CDも自動的に新しいバージョンを使用
+git add .flutter-version
+git commit -m "chore: Flutterバージョンを更新"
+```
+
 ### 開発時の推奨ワークフロー
 
 1. **コード作成**: Kiroのステアリングファイルが自動的にガイド
-2. **保存時**: Hooksが自動的に品質チェックを実行
-3. **コミット前**: `flutter analyze` と `flutter test` で最終確認
-4. **PR作成**: GitHub Actionsが自動的にCI/CDを実行
+2. **保存時**: Kiro hooksが自動的に品質チェックを実行
+3. **コミット前**: Lefthook pre-commitフックが自動実行
+   - `dart format` でコード整形（自動修正）
+   - `flutter analyze` で静的解析
+   - Flutterバージョンチェック
+4. **プッシュ前**: Lefthook pre-pushフックが自動実行
+   - `flutter test` で全テスト実行
+5. **PR作成**: GitHub Actionsが自動的にCI/CDを実行
+
+#### ローカルでCI/CDチェックを実行
+
+プッシュ前にCI/CDと同じチェックをローカルで実行できます：
+
+```bash
+# Kiro IDEの「Agent Hooks」から「CI/CDローカル検証」を実行
+# または手動で実行：
+flutter analyze
+dart format --set-exit-if-changed .
+flutter test --coverage
+```
 
 ## 📝 ライセンス
 

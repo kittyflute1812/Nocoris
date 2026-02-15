@@ -1,0 +1,15 @@
+{
+    "name": "Flutterバージョン同期チェック",
+    "version": "1.0.0",
+    "description": ".flutter-versionファイル変更時にローカル環境との同期を確認",
+    "when": {
+        "type": "fileEdited",
+        "patterns": [
+            ".flutter-version"
+        ]
+    },
+    "then": {
+        "type": "askAgent",
+        "prompt": ".flutter-versionファイルが更新されました。以下を実行してください：\n\n1. 現在のFlutterバージョンを確認（flutter --version）\n2. .flutter-versionの内容と比較\n3. 不一致の場合、flutter version <バージョン>で切り替えを提案\n4. CI/CDも自動的に新しいバージョンを使用することを説明"
+    }
+}

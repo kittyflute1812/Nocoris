@@ -15,10 +15,14 @@ jobs:
       - name: リポジトリをチェックアウト
         uses: actions/checkout@v4
 
+      - name: Flutterバージョンを読み込み
+        id: flutter-version
+        run: echo "version=$(cat .flutter-version)" >> $GITHUB_OUTPUT
+
       - name: Flutter環境をセットアップ
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.38.7'
+          flutter-version: ${{ steps.flutter-version.outputs.version }}
           channel: 'stable'
 
       - name: 依存関係をインストール
@@ -47,10 +51,14 @@ jobs:
       - name: リポジトリをチェックアウト
         uses: actions/checkout@v4
 
+      - name: Flutterバージョンを読み込み
+        id: flutter-version
+        run: echo "version=$(cat .flutter-version)" >> $GITHUB_OUTPUT
+
       - name: Flutter環境をセットアップ
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.38.7'
+          flutter-version: ${{ steps.flutter-version.outputs.version }}
           channel: 'stable'
 
       - name: 依存関係をインストール
@@ -90,10 +98,14 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
+      - name: Flutterバージョンを読み込み
+        id: flutter-version
+        run: echo "version=$(cat .flutter-version)" >> $GITHUB_OUTPUT
+
       - name: Flutter環境をセットアップ
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.38.7'
+          flutter-version: ${{ steps.flutter-version.outputs.version }}
           channel: 'stable'
 
       - name: 依存関係をインストール
@@ -117,10 +129,14 @@ jobs:
       - name: リポジトリをチェックアウト
         uses: actions/checkout@v4
 
+      - name: Flutterバージョンを読み込み
+        id: flutter-version
+        run: echo "version=$(cat .flutter-version)" >> $GITHUB_OUTPUT
+
       - name: Flutter環境をセットアップ
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.38.7'
+          flutter-version: ${{ steps.flutter-version.outputs.version }}
           channel: 'stable'
 
       - name: 依存関係をインストール
