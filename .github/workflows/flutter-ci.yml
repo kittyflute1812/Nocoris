@@ -18,7 +18,7 @@ jobs:
       - name: Flutter環境をセットアップ
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.0'
+          flutter-version: '3.38.7'
           channel: 'stable'
 
       - name: 依存関係をインストール
@@ -50,7 +50,7 @@ jobs:
       - name: Flutter環境をセットアップ
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.0'
+          flutter-version: '3.38.7'
           channel: 'stable'
 
       - name: 依存関係をインストール
@@ -93,7 +93,7 @@ jobs:
       - name: Flutter環境をセットアップ
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.0'
+          flutter-version: '3.38.7'
           channel: 'stable'
 
       - name: 依存関係をインストール
@@ -120,7 +120,7 @@ jobs:
       - name: Flutter環境をセットアップ
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.0'
+          flutter-version: '3.38.7'
           channel: 'stable'
 
       - name: 依存関係をインストール
