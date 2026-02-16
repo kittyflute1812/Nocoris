@@ -2,7 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/item_service.dart';
 
 /// ItemServiceのProvider
-/// 
+///
 /// アプリ全体でItemServiceのインスタンスを共有します。
 /// Providerを使用することで、手動でライフサイクルを管理します。
 final itemServiceProvider = Provider<ItemService>((ref) {
@@ -10,9 +10,8 @@ final itemServiceProvider = Provider<ItemService>((ref) {
 });
 
 /// ItemServiceを初期化するFutureProvider
-/// 
+///
 /// StorageServiceの初期化を含む非同期処理を実行します。
 final itemServiceInitProvider = FutureProvider<ItemService>((ref) async {
   return await ItemService.create();
 });
-

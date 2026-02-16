@@ -23,7 +23,7 @@ void main() {
 
     testWidgets('新規作成モードで表示される', (tester) async {
       final mockItemService = TestHelpers.createMockItemService();
-      
+
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
@@ -43,7 +43,7 @@ void main() {
 
     testWidgets('編集モードで表示される', (tester) async {
       final mockItemService = TestHelpers.createMockItemService();
-      
+
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
@@ -63,7 +63,7 @@ void main() {
 
     testWidgets('バリデーションが機能する - アイテム名が空', (tester) async {
       final mockItemService = TestHelpers.createMockItemService();
-      
+
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
@@ -87,7 +87,7 @@ void main() {
 
     testWidgets('バリデーションが機能する - 値が空', (tester) async {
       final mockItemService = TestHelpers.createMockItemService();
-      
+
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
@@ -116,7 +116,7 @@ void main() {
 
     testWidgets('バリデーションが機能する - 値が無効な文字列', (tester) async {
       final mockItemService = TestHelpers.createMockItemService();
-      
+
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
@@ -132,7 +132,7 @@ void main() {
 
       // フォームに入力
       await tester.enterText(find.byType(TextFormField).first, 'テストアイテム');
-      
+
       // 値フィールドに直接無効な値を設定（digitsOnlyフィルターをバイパス）
       final countField = find.byType(TextFormField).last;
       final textField = tester.widget<TextFormField>(countField);
@@ -148,7 +148,7 @@ void main() {
 
     testWidgets('アイテムが正しく作成される', (tester) async {
       final mockItemService = TestHelpers.createMockItemService();
-      
+
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
@@ -176,7 +176,7 @@ void main() {
 
     testWidgets('アイテムが正しく更新される', (tester) async {
       final mockItemService = TestHelpers.createMockItemService();
-      
+
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
@@ -204,7 +204,7 @@ void main() {
 
     testWidgets('編集モードで名前フィールドが有効化されている', (tester) async {
       final mockItemService = TestHelpers.createMockItemService();
-      
+
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
@@ -228,7 +228,7 @@ void main() {
 
     testWidgets('編集モードで名前を変更できる', (tester) async {
       final mockItemService = TestHelpers.createMockItemService();
-      
+
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
@@ -257,7 +257,7 @@ void main() {
 
     testWidgets('編集モードで名前のバリデーションが機能する', (tester) async {
       final mockItemService = TestHelpers.createMockItemService();
-      
+
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
@@ -287,7 +287,7 @@ void main() {
     group('名前編集のエッジケーステスト', () {
       testWidgets('最大長を超える名前の入力でバリデーションエラーが表示される', (tester) async {
         final mockItemService = TestHelpers.createMockItemService();
-        
+
         await tester.pumpWidget(
           ProviderScope(
             overrides: [
@@ -319,7 +319,7 @@ void main() {
 
       testWidgets('最大長ちょうどの名前が正常に入力できる', (tester) async {
         final mockItemService = TestHelpers.createMockItemService();
-        
+
         await tester.pumpWidget(
           ProviderScope(
             overrides: [
@@ -354,7 +354,7 @@ void main() {
 
       testWidgets('空白のみの名前でバリデーションエラーが表示される', (tester) async {
         final mockItemService = TestHelpers.createMockItemService();
-        
+
         await tester.pumpWidget(
           ProviderScope(
             overrides: [
@@ -383,7 +383,7 @@ void main() {
 
       testWidgets('特殊文字を含む名前が正常に入力できる', (tester) async {
         final mockItemService = TestHelpers.createMockItemService();
-        
+
         await tester.pumpWidget(
           ProviderScope(
             overrides: [
@@ -416,7 +416,7 @@ void main() {
 
       testWidgets('絵文字を含む名前が正常に入力できる', (tester) async {
         final mockItemService = TestHelpers.createMockItemService();
-        
+
         await tester.pumpWidget(
           ProviderScope(
             overrides: [
@@ -449,7 +449,7 @@ void main() {
 
       testWidgets('Unicode文字を含む名前が正常に入力できる', (tester) async {
         final mockItemService = TestHelpers.createMockItemService();
-        
+
         await tester.pumpWidget(
           ProviderScope(
             overrides: [
@@ -482,7 +482,7 @@ void main() {
 
       testWidgets('編集モードで名前を最大長まで変更できる', (tester) async {
         final mockItemService = TestHelpers.createMockItemService();
-        
+
         await tester.pumpWidget(
           ProviderScope(
             overrides: [
@@ -515,7 +515,7 @@ void main() {
 
       testWidgets('前後の空白を含む名前が正しく処理される', (tester) async {
         final mockItemService = TestHelpers.createMockItemService();
-        
+
         await tester.pumpWidget(
           ProviderScope(
             overrides: [
@@ -548,7 +548,7 @@ void main() {
 
       testWidgets('改行文字を含む名前が正しく処理される', (tester) async {
         final mockItemService = TestHelpers.createMockItemService();
-        
+
         await tester.pumpWidget(
           ProviderScope(
             overrides: [
@@ -581,7 +581,7 @@ void main() {
 
       testWidgets('フォーム状態がバリデーションエラー後も保持される', (tester) async {
         final mockItemService = TestHelpers.createMockItemService();
-        
+
         await tester.pumpWidget(
           ProviderScope(
             overrides: [

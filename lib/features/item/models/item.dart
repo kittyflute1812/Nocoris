@@ -2,7 +2,7 @@ import 'package:uuid/uuid.dart';
 import '../../../core/constants/app_constants.dart';
 
 /// アイテムのデータモデル
-/// 
+///
 /// 不変性を保つため、状態変更は新しいインスタンスを返すメソッドで行います。
 class Item {
   final String id;
@@ -61,12 +61,12 @@ class Item {
   }
 
   /// プロパティをコピーして新しいインスタンスを作成
-  /// 
+  ///
   /// [icon]パラメータについて：
   /// - パラメータが提供されない場合：既存のアイコンを維持
   /// - パラメータにnullが渡された場合：アイコンを削除（nullに設定）
   /// - パラメータに値が渡された場合：新しいアイコンに更新
-  /// 
+  ///
   /// 注意：nameが変更される場合は新しい値に対してバリデーションが実行されます
   Item copyWith({
     String? id,
@@ -80,7 +80,7 @@ class Item {
     if (name != null) {
       _validateName(name);
     }
-    
+
     return Item._internal(
       id: id ?? this.id,
       name: name ?? this.name,
@@ -95,15 +95,15 @@ class Item {
   static const Object _sentinel = Object();
 
   /// JSONからItemインスタンスを作成
-  /// 
+  ///
   /// 後方互換性のため、不正な名前を持つ既存データを自動的にサニタイズします：
   /// - 空文字列 → "無名のアイテム"
-  /// - 空白のみ → "無名のアイテム"  
+  /// - 空白のみ → "無名のアイテム"
   /// - 長すぎる名前 → 最大長に切り詰め
   factory Item.fromJson(Map<String, dynamic> json) {
     final String rawName = json['name'] as String;
     final String sanitizedName = _sanitizeName(rawName);
-    
+
     return Item._internal(
       id: json['id'] as String,
       name: sanitizedName,
@@ -136,12 +136,12 @@ class Item {
     if (name.trim().isEmpty) {
       throw ArgumentError('Item name cannot be empty or only whitespace');
     }
-    
+
     // 数量の検証
     if (initialCount < 0) {
       throw ArgumentError('Initial count must be non-negative');
     }
-    
+
     final now = DateTime.now();
     const uuid = Uuid();
     return Item(
@@ -165,7 +165,8 @@ class Item {
           icon == other.icon;
 
   @override
-  int get hashCode => id.hashCode ^ name.hashCode ^ count.hashCode ^ (icon?.hashCode ?? 0);
+  int get hashCode =>
+      id.hashCode ^ name.hashCode ^ count.hashCode ^ (icon?.hashCode ?? 0);
 
   @override
   String toString() {
@@ -178,7 +179,8 @@ class Item {
       throw ArgumentError('Item name cannot be empty or only whitespace');
     }
     if (name.length > AppConstants.maxNameLength) {
-      throw ArgumentError('Item name cannot exceed ${AppConstants.maxNameLength} characters');
+      throw ArgumentError(
+          'Item name cannot exceed ${AppConstants.maxNameLength} characters');
     }
   }
 
@@ -188,12 +190,12 @@ class Item {
     if (name.trim().isEmpty) {
       return '無名のアイテム';
     }
-    
+
     // 長すぎる場合は切り詰める
     if (name.length > AppConstants.maxNameLength) {
       return name.substring(0, AppConstants.maxNameLength);
     }
-    
+
     return name;
   }
 }

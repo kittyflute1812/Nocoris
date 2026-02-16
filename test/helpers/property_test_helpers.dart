@@ -26,35 +26,120 @@ class PropertyTestHelpers {
   /// ランダムな文字列を生成する
   static String _generateRandomString(int minLength, int maxLength) {
     final length = minLength + _random.nextInt(maxLength - minLength + 1);
-    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをん';
-    
-    return String.fromCharCodes(
-      Iterable.generate(length, (_) => chars.codeUnitAt(_random.nextInt(chars.length)))
-    );
+    const chars =
+        'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをん';
+
+    return String.fromCharCodes(Iterable.generate(
+        length, (_) => chars.codeUnitAt(_random.nextInt(chars.length))));
   }
 
   /// ランダムな絵文字を生成する
   static String _generateRandomEmoji() {
     final emojis = [
-      '🍎', '🍌', '🍊', '🍇', '🍓', '🥝', '🍑', '🥭', '🍍', '🥥',
-      '🍅', '🥑', '🍆', '🥒', '🥕', '🌽', '🥔', '🍠', '🥐', '🍞',
-      '🧀', '🥚', '🍳', '🥓', '🥩', '🍗', '🍖', '🌭', '🍔', '🍟',
-      '🍕', '🥪', '🌮', '🌯', '🥙', '🧆', '🥘', '🍝', '🍜', '🍲',
-      '🍛', '🍣', '🍱', '🥟', '🦪', '🍤', '🍙', '🍚', '🍘', '🍥',
-      '🥠', '🥮', '🍢', '🍡', '🍧', '🍨', '🍦', '🥧', '🧁', '🍰',
-      '🎂', '🍮', '🍭', '🍬', '🍫', '🍿', '🍩', '🍪', '🌰', '🥜',
-      '🍯', '🥛', '🍼', '☕', '🍵', '🧃', '🥤', '🧋', '🍶', '🍾',
-      '🍷', '🍸', '🍹', '🍺', '🍻', '🥂', '🥃', '🥤', '🧊', '🥢',
-      '🍽️', '🍴', '🥄', '🔪', '🏺'
+      '🍎',
+      '🍌',
+      '🍊',
+      '🍇',
+      '🍓',
+      '🥝',
+      '🍑',
+      '🥭',
+      '🍍',
+      '🥥',
+      '🍅',
+      '🥑',
+      '🍆',
+      '🥒',
+      '🥕',
+      '🌽',
+      '🥔',
+      '🍠',
+      '🥐',
+      '🍞',
+      '🧀',
+      '🥚',
+      '🍳',
+      '🥓',
+      '🥩',
+      '🍗',
+      '🍖',
+      '🌭',
+      '🍔',
+      '🍟',
+      '🍕',
+      '🥪',
+      '🌮',
+      '🌯',
+      '🥙',
+      '🧆',
+      '🥘',
+      '🍝',
+      '🍜',
+      '🍲',
+      '🍛',
+      '🍣',
+      '🍱',
+      '🥟',
+      '🦪',
+      '🍤',
+      '🍙',
+      '🍚',
+      '🍘',
+      '🍥',
+      '🥠',
+      '🥮',
+      '🍢',
+      '🍡',
+      '🍧',
+      '🍨',
+      '🍦',
+      '🥧',
+      '🧁',
+      '🍰',
+      '🎂',
+      '🍮',
+      '🍭',
+      '🍬',
+      '🍫',
+      '🍿',
+      '🍩',
+      '🍪',
+      '🌰',
+      '🥜',
+      '🍯',
+      '🥛',
+      '🍼',
+      '☕',
+      '🍵',
+      '🧃',
+      '🥤',
+      '🧋',
+      '🍶',
+      '🍾',
+      '🍷',
+      '🍸',
+      '🍹',
+      '🍺',
+      '🍻',
+      '🥂',
+      '🥃',
+      '🥤',
+      '🧊',
+      '🥢',
+      '🍽️',
+      '🍴',
+      '🥄',
+      '🔪',
+      '🏺'
     ];
-    
+
     return emojis[_random.nextInt(emojis.length)];
   }
 
   /// ランダムなIDを生成する
   static String _generateRandomId() {
-    return DateTime.now().millisecondsSinceEpoch.toString() + 
-           _random.nextInt(10000).toString();
+    return DateTime.now().millisecondsSinceEpoch.toString() +
+        _random.nextInt(10000).toString();
   }
 
   /// ランダムな正の整数を生成する
@@ -92,14 +177,38 @@ class PropertyTestHelpers {
   /// 有効なアイテム名を生成する（空でない文字列）
   static String generateValidItemName() {
     final names = [
-      'りんご', 'みかん', 'バナナ', 'ぶどう', 'いちご',
-      'トマト', 'きゅうり', 'にんじん', 'じゃがいも', 'たまねぎ',
-      'パン', 'お米', 'パスタ', 'うどん', 'そば',
-      'コーヒー', 'お茶', 'ジュース', '水', 'ミルク',
-      'ノート', 'ペン', '消しゴム', '定規', 'はさみ',
-      'タオル', 'せっけん', 'シャンプー', '歯ブラシ', 'ティッシュ'
+      'りんご',
+      'みかん',
+      'バナナ',
+      'ぶどう',
+      'いちご',
+      'トマト',
+      'きゅうり',
+      'にんじん',
+      'じゃがいも',
+      'たまねぎ',
+      'パン',
+      'お米',
+      'パスタ',
+      'うどん',
+      'そば',
+      'コーヒー',
+      'お茶',
+      'ジュース',
+      '水',
+      'ミルク',
+      'ノート',
+      'ペン',
+      '消しゴム',
+      '定規',
+      'はさみ',
+      'タオル',
+      'せっけん',
+      'シャンプー',
+      '歯ブラシ',
+      'ティッシュ'
     ];
-    
+
     return names[_random.nextInt(names.length)];
   }
 

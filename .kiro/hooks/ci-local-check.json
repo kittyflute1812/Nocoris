@@ -1,0 +1,12 @@
+{
+    "name": "CI/CDローカル検証",
+    "version": "1.0.0",
+    "description": "プッシュ前にCI/CDと同じチェックをローカルで実行",
+    "when": {
+        "type": "userTriggered"
+    },
+    "then": {
+        "type": "askAgent",
+        "prompt": "CI/CDと同じチェックをローカルで実行してください：\n\n1. flutter analyze（警告ゼロを確認）\n2. dart format --set-exit-if-changed .（フォーマットチェック）\n3. flutter test --coverage（全テスト実行）\n4. 結果をサマリー形式で報告\n5. 問題があれば修正方法を提案\n\nこれにより、プッシュ前にCI/CDの失敗を防げます。"
+    }
+}

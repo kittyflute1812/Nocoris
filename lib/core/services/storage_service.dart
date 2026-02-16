@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../constants/app_constants.dart';
 
 /// ローカルストレージへのデータ永続化を担当するサービス
-/// 
+///
 /// SharedPreferencesを使用してJSONデータの保存・読み込みを行います。
 class StorageService {
   final Logger _logger = Logger();
@@ -44,7 +44,8 @@ class StorageService {
   }
 
   /// 複数のJSONデータをリストとして保存
-  Future<bool> saveJsonList(String key, List<Map<String, dynamic>> jsonList) async {
+  Future<bool> saveJsonList(
+      String key, List<Map<String, dynamic>> jsonList) async {
     try {
       return await _prefs.setString(key, jsonEncode(jsonList));
     } catch (e) {
@@ -78,4 +79,3 @@ class StorageService {
     return loadJsonList(AppConstants.itemsStorageKey);
   }
 }
-

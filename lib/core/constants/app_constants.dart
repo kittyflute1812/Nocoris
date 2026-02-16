@@ -20,4 +20,3 @@ class AppConstants {
   static const int minCount = 0;
   static const int maxNameLength = 100;
 }
-

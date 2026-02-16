@@ -117,10 +117,10 @@ class _ItemCardHeader extends StatelessWidget {
           child: Text(
             item.name,
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
-              letterSpacing: 0.2,
-            ),
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
+                  letterSpacing: 0.2,
+                ),
             overflow: TextOverflow.ellipsis,
             semanticsLabel: AppStrings.itemNameSemantics(item.name),
           ),
@@ -152,29 +152,28 @@ class _ItemCardMenu extends StatelessWidget {
             onDelete();
         }
       },
-      itemBuilder:
-          (context) => [
-            const PopupMenuItem(
-              value: 'edit',
-              child: Row(
-                children: [
-                  Icon(Icons.edit, size: 20, color: AppColors.primary),
-                  SizedBox(width: 12),
-                  Text(AppStrings.edit),
-                ],
-              ),
-            ),
-            const PopupMenuItem(
-              value: 'delete',
-              child: Row(
-                children: [
-                  Icon(Icons.delete, size: 20, color: AppColors.error),
-                  SizedBox(width: 12),
-                  Text(AppStrings.delete),
-                ],
-              ),
-            ),
-          ],
+      itemBuilder: (context) => [
+        const PopupMenuItem(
+          value: 'edit',
+          child: Row(
+            children: [
+              Icon(Icons.edit, size: 20, color: AppColors.primary),
+              SizedBox(width: 12),
+              Text(AppStrings.edit),
+            ],
+          ),
+        ),
+        const PopupMenuItem(
+          value: 'delete',
+          child: Row(
+            children: [
+              Icon(Icons.delete, size: 20, color: AppColors.error),
+              SizedBox(width: 12),
+              Text(AppStrings.delete),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
@@ -209,17 +208,17 @@ class _ItemCardCounter extends StatelessWidget {
               Text(
                 '${AppStrings.remainingCount}: ',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: AppColors.textSecondary,
-                  fontWeight: FontWeight.w500,
-                ),
+                      color: AppColors.textSecondary,
+                      fontWeight: FontWeight.w500,
+                    ),
               ),
               Text(
                 '${item.count}',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 24,
-                ),
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 24,
+                    ),
                 semanticsLabel: AppStrings.remainingCountSemantics(item.count),
               ),
             ],
@@ -268,16 +267,15 @@ class _CounterButtons extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: count > 0 ? AppColors.primary : AppColors.borderLight,
                   shape: BoxShape.circle,
-                  boxShadow:
-                      count > 0
-                          ? const [
-                            BoxShadow(
-                              color: AppColors.shadow,
-                              blurRadius: 4,
-                              offset: Offset(0, 2),
-                            ),
-                          ]
-                          : null,
+                  boxShadow: count > 0
+                      ? const [
+                          BoxShadow(
+                            color: AppColors.shadow,
+                            blurRadius: 4,
+                            offset: Offset(0, 2),
+                          ),
+                        ]
+                      : null,
                 ),
                 child: Icon(
                   Icons.remove,

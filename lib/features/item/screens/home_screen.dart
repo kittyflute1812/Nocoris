@@ -12,7 +12,7 @@ import '../../../core/constants/app_strings.dart';
 import '../../../core/theme/app_colors.dart';
 
 /// メイン画面
-/// 
+///
 /// アイテム一覧の表示と、アイテムの追加・編集・削除機能を提供します。
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -27,7 +27,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final itemServiceAsync = ref.read(itemServiceInitProvider);
     final itemService = itemServiceAsync.value;
     if (itemService == null) return;
-    
+
     final result = await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => ProviderScope(
@@ -52,7 +52,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final itemServiceAsync = ref.read(itemServiceInitProvider);
     final itemService = itemServiceAsync.value;
     if (itemService == null) return;
-    
+
     final item = itemService.getItemById(itemId);
     if (item == null) return;
 
@@ -71,7 +71,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final itemServiceAsync = ref.read(itemServiceInitProvider);
     final itemService = itemServiceAsync.value;
     if (itemService == null) return;
-    
+
     try {
       await itemService.deleteItem(itemId);
     } catch (e) {
@@ -150,7 +150,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 class _HomeScreenBody extends ConsumerStatefulWidget {
   final Future<void> Function([String?]) onShowItemFormDialog;
   final Future<void> Function(String) onShowDeleteConfirmation;
-  final Future<void> Function(String, Future<bool> Function()) onHandleCountChange;
+  final Future<void> Function(String, Future<bool> Function())
+      onHandleCountChange;
 
   const _HomeScreenBody({
     required this.onShowItemFormDialog,

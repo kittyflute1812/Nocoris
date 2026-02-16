@@ -5,14 +5,12 @@ import '../helpers/property_test_helpers.dart';
 import '../helpers/property_test_config.dart';
 
 /// プロパティベーステストのセットアップ検証テスト
-/// 
+///
 /// このテストは、プロパティテストフレームワークが正しく動作することを確認します。
 /// 実際の12のプロパティテストを実装する前に、基本的な機能をテストします。
 void main() {
   PropertyTestFramework.runAllProperties(() {
-    
     group('セットアップ検証テスト', () {
-      
       test('PropertyTestHelpers.generateValidItemName() が有効な名前を生成すること', () {
         for (int i = 0; i < 50; i++) {
           final name = PropertyTestHelpers.generateValidItemName();
@@ -50,17 +48,17 @@ void main() {
       test('PropertyTestConfig が正しく設定されていること', () {
         expect(PropertyTestConfig.defaultIterations, equals(100));
         expect(PropertyTestConfig.getAllPropertyNumbers(), hasLength(12));
-        
+
         for (int i = 1; i <= 12; i++) {
-          expect(PropertyTestConfig.propertyDescriptions.containsKey(i), isTrue);
-          expect(PropertyTestConfig.propertyRequirements.containsKey(i), isTrue);
+          expect(
+              PropertyTestConfig.propertyDescriptions.containsKey(i), isTrue);
+          expect(
+              PropertyTestConfig.propertyRequirements.containsKey(i), isTrue);
         }
       });
-
     });
 
     group('基本プロパティテスト検証', () {
-      
       // 簡単なプロパティテストの例：アイテム作成の基本プロパティ
       PropertyTestFramework.runProperty<String>(
         propertyNumber: 1, // テスト用に1を使用（実際のプロパティ1とは異なる）
@@ -68,9 +66,9 @@ void main() {
           if (!PropertyTestHelpers.isValidItemName(name)) {
             return true; // 無効な名前の場合はスキップ
           }
-          
+
           final item = Item.create(name: name, initialCount: 0);
-          
+
           // プロパティ：作成されたアイテムは指定された名前を持つ
           return item.name == name;
         },
@@ -82,12 +80,13 @@ void main() {
       PropertyTestFramework.runProperty2<String, int>(
         propertyNumber: 4, // テスト用に4を使用（実際のプロパティ4とは異なる）
         property: (name, count) {
-          if (!PropertyTestHelpers.isValidItemName(name) || !PropertyTestHelpers.isValidCount(count)) {
+          if (!PropertyTestHelpers.isValidItemName(name) ||
+              !PropertyTestHelpers.isValidCount(count)) {
             return true; // 無効なデータの場合はスキップ
           }
-          
+
           final item = Item.create(name: name, initialCount: count);
-          
+
           // プロパティ：作成されたアイテムは指定された数量を持つ
           return item.count == count;
         },
@@ -95,17 +94,15 @@ void main() {
         generator2: PropertyTestHelpers.generateValidCount,
         iterations: 50, // セットアップ検証なので少なめ
       );
-
     });
 
     group('エラーハンドリング検証', () {
-      
       test('無効なプロパティ番号でエラーが発生すること', () {
         expect(
           () => PropertyTestConfig.getPropertyDescription(0),
           throwsArgumentError,
         );
-        
+
         expect(
           () => PropertyTestConfig.getPropertyDescription(13),
           throwsArgumentError,
@@ -121,7 +118,7 @@ void main() {
           ),
           throwsArgumentError,
         );
-        
+
         expect(
           () => PropertyTestFramework.validatePropertyTest(
             propertyNumber: 13,
@@ -130,7 +127,7 @@ void main() {
           ),
           throwsArgumentError,
         );
-        
+
         // 有効なプロパティ番号では例外が発生しないこと
         expect(
           () => PropertyTestFramework.validatePropertyTest(
@@ -141,8 +138,6 @@ void main() {
           returnsNormally,
         );
       });
-
     });
-
   });
 }

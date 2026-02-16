@@ -1,0 +1,59 @@
+# Lefthook configuration for Nocoris project
+# https://github.com/evilmartians/lefthook
+
+# Pre-commit hooks - コミット前の品質チェック
+pre-commit:
+  parallel: true
+  commands:
+    format-check:
+      glob: "*.dart"
+      run: dart format --set-exit-if-changed {staged_files}
+      stage_fixed: true
+
+    analyze:
+      run: flutter analyze --no-pub
+
+    version-check:
+      run: |
+        VERSION_FILE=".flutter-version"
+        if [ -f "$VERSION_FILE" ]; then
+          REQUIRED_VERSION=$(cat "$VERSION_FILE" | tr -d '[:space:]')
+          CURRENT_VERSION=$(flutter --version | head -n 1 | awk '{print $2}')
+          if [ "$CURRENT_VERSION" != "$REQUIRED_VERSION" ]; then
+            echo "⚠️  Flutter version mismatch!"
+            echo "   Required: $REQUIRED_VERSION"
+            echo "   Current:  $CURRENT_VERSION"
+            echo "💡 Run: flutter version $REQUIRED_VERSION"
+            exit 1
+          fi
+        fi
+
+# Pre-push hooks - プッシュ前の完全チェック
+pre-push:
+  commands:
+    test:
+      run: flutter test
+
+# Commit-msg hooks - コミットメッセージの検証
+commit-msg:
+  commands:
+    conventional-commits:
+      run: |
+        MSG=$(cat {1})
+        if ! echo "$MSG" | grep -qE "^(feat|fix|docs|style|refactor|test|chore|perf|ci|build|revert)(\(.+\))?: .+"; then
+          echo "❌ Commit message must follow Conventional Commits format"
+          echo "Examples:"
+          echo "  feat: 新機能を追加"
+          echo "  fix: バグを修正"
+          echo "  docs: ドキュメントを更新"
+          echo "  style: コードフォーマットを修正"
+          echo "  refactor: リファクタリング"
+          echo "  test: テストを追加"
+          echo "  chore: ビルドプロセスやツールの変更"
+          exit 1
+        fi
+
+# Skip hooks with environment variable
+skip_output:
+  - meta
+  - success

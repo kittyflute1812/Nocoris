@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 /// アプリケーションのカラーパレット
-/// 
+///
 /// リスをイメージした温かみのある茶色・ベージュ・オレンジ系の色を使用
 class AppColors {
   AppColors._(); // プライベートコンストラクタ
@@ -82,10 +82,10 @@ class AppColors {
   /// カラーの明度を調整
   static Color adjustBrightness(Color color, double factor) {
     assert(factor >= 0 && factor <= 2, 'Factor must be between 0 and 2');
-    
+
     final hsl = HSLColor.fromColor(color);
     final adjustedLightness = (hsl.lightness * factor).clamp(0.0, 1.0);
-    
+
     return hsl.withLightness(adjustedLightness).toColor();
   }
 
@@ -95,4 +95,3 @@ class AppColors {
     return color.withAlpha(alpha);
   }
 }
-

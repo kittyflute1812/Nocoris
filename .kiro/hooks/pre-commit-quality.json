@@ -1,0 +1,12 @@
+{
+    "name": "コミット前品質チェック",
+    "version": "1.0.0",
+    "description": "コミット前にlefthookと連携して品質チェックを実行",
+    "when": {
+        "type": "userTriggered"
+    },
+    "then": {
+        "type": "askAgent",
+        "prompt": "以下のコマンドを実行して、コミット前の品質チェックを行ってください：\n\n1. lefthook run pre-commit\n2. 結果を確認して問題があれば修正方法を提案\n3. 全てパスしたら「✅ コミット準備完了」と報告"
+    }
+}

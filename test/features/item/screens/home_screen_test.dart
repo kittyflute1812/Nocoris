@@ -37,7 +37,8 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            itemServiceInitProvider.overrideWith((ref) async => mockItemService),
+            itemServiceInitProvider
+                .overrideWith((ref) async => mockItemService),
           ],
           child: const MaterialApp(
             home: HomeScreen(),
@@ -64,7 +65,8 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            itemServiceInitProvider.overrideWith((ref) async => mockItemService),
+            itemServiceInitProvider
+                .overrideWith((ref) async => mockItemService),
           ],
           child: const MaterialApp(
             home: HomeScreen(),
@@ -88,7 +90,8 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            itemServiceInitProvider.overrideWith((ref) async => mockItemService),
+            itemServiceInitProvider
+                .overrideWith((ref) async => mockItemService),
             itemServiceProvider.overrideWith((ref) => mockItemService),
           ],
           child: const MaterialApp(
