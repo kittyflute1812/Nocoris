@@ -65,6 +65,10 @@ child: const Text('Hello')                // constコンストラクタ
 **🚨 重要:** タスク実行を開始する前に、必ず専用のfeatureブランチを作成してください。
 
 ```bash
+# 最新のmainブランチを取得
+git checkout main
+git pull
+
 # タスク専用ブランチを作成して切り替え
 git checkout -b feature/task-[タスク番号]-[簡潔な説明]
 
@@ -284,6 +288,4 @@ Property 5, 8, 9の実装完了
    - `git commit` でConventional Commits形式でコミット
    - `git push` でリモートにプッシュ
    - `gh pr create` でプルリクエスト作成
-   - ユーザーに完了報告とPR URLを提供
-
-このルールにより、各タスクが独立したブランチとPRとして管理され、レビューとマージが効率化される。
+   - ユーザ
