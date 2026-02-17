@@ -16,7 +16,7 @@ Nocorisプロジェクトにおけるタスク実行の標準的なルールと�
 ```bash
 # 実装後の必須チェック（この順序で実行）
 1. flutter analyze          # 警告ゼロを確認
-2. getDiagnostics           # 診断結果をチェック  
+2. getDiagnostics           # 診断結果をチェック
 3. flutter test             # 全テスト通過を確認
 4. flutter run              # 実際の動作確認
 ```
@@ -60,6 +60,30 @@ child: const Text('Hello')                // constコンストラクタ
 
 ## タスク実行ワークフロー
 
+### Phase 0: ブランチ作成（最初に実行）
+
+**🚨 重要:** タスク実行を開始する前に、必ず専用のfeatureブランチを作成してください。
+
+```bash
+# タスク専用ブランチを作成して切り替え
+git checkout -b feature/task-[タスク番号]-[簡潔な説明]
+
+# 例:
+# git checkout -b feature/task-12.4-ui-integration-property-tests
+# git checkout -b feature/task-5.1-item-deletion
+# git checkout -b feature/task-8.2-error-handling
+```
+
+**ブランチ命名規則:**
+- プレフィックス: `feature/task-`
+- タスク番号: tasks.mdに記載されているタスク番号（例: `12.4`, `5.1`）
+- 説明: タスク内容を簡潔に表す英語（ケバブケース）
+
+**注意事項:**
+- ブランチ作成は実装開始前の最初のステップです
+- 既存のブランチで作業している場合は、必ず新しいブランチに切り替えてください
+- ブランチ名にタスク番号を含めることで、タスクとPRの紐付けが明確になります
+
 ### Phase 1: 準備
 1. **要件確認:** タスクの要件と期待される成果物を明確化
 2. **設計確認:** 既存のアーキテクチャとの整合性を確認
@@ -88,6 +112,8 @@ child: const Text('Hello')                // constコンストラクタ
 2. **PR作成:** タスク完了時に自動的にプルリクエストを作成
 3. **ドキュメント更新:** 必要に応じてREADMEやコメントを更新
 4. **次タスク準備:** 依存関係のあるタスクの準備
+
+**注意:** ブランチ作成はPhase 0で既に完了しているため、ここではコミットとPR作成のみを行います。
 
 ## エラーハンドリング
 
@@ -160,11 +186,34 @@ child: const Text('Hello')                // constコンストラクタ
 
 ## 自動コミット・PR作成ルール
 
+### タスク開始時の必須アクション
+
+**🚨 最初に実行:** タスクを開始する前に、必ず専用のfeatureブランチを作成してください。
+
+```bash
+# 現在のブランチを確認
+git branch
+
+# タスク専用ブランチを作成して切り替え
+git checkout -b feature/task-[タスク番号]-[簡潔な説明]
+
+# 例:
+git checkout -b feature/task-12.4-ui-integration-property-tests
+git checkout -b feature/task-5.1-item-deletion
+git checkout -b feature/task-8.2-error-handling
+```
+
 ### タスク完了時の必須アクション
 
-1. **コミット作成**
+1. **変更をステージング**
    ```bash
    git add [変更されたファイル]
+   # または全ての変更をステージング
+   git add -A
+   ```
+
+2. **コミット作成**
+   ```bash
    git commit -m "[type]: [タスク名]（[タスク番号]）を実装
 
    - [実装内容の詳細]
@@ -172,13 +221,12 @@ child: const Text('Hello')                // constコンストラクタ
    - [テスト結果やその他の重要な情報]"
    ```
 
-2. **ブランチ作成・切り替え**
+3. **プッシュ**
    ```bash
-   git checkout -b feature/task-[タスク番号]-[簡潔な説明]
-   # 例: git checkout -b feature/task-12.4-ui-integration-property-tests
+   git push -u origin feature/task-[タスク番号]-[簡潔な説明]
    ```
 
-3. **プルリクエスト作成**
+4. **プルリクエスト作成**
    ```bash
    gh pr create --title "[type]: [タスク名]（[タスク番号]）" \
                 --body "## 概要
@@ -215,20 +263,27 @@ test: UI統合プロパティテスト（12.4）を実装
 
 Property 5, 8, 9の実装完了
 - アイテム表示の完全性テスト
-- 編集フォーム情報の一致テスト  
+- 編集フォーム情報の一致テスト
 - アイテム更新の反映テスト
 - 各プロパティ100回反復でテスト実行
 ```
 
-### 自動化の実装
+### 自動化の実装手順
 
-エージェントは以下の手順でタスク完了を処理する：
+エージェントは以下の手順でタスクを処理する：
 
-1. **taskStatus**ツールで`completed`に更新
-2. **git add**で変更ファイルを追加
-3. **git commit**でConventional Commits形式でコミット
-4. **git checkout -b**で機能ブランチ作成
-5. **gh pr create**でプルリクエスト作成
-6. ユーザーに完了報告とPR URLを提供
+1. **Phase 0: ブランチ作成**
+   - `git checkout -b feature/task-[番号]-[説明]` でブランチ作成
+   - ブランチ名にタスク番号を含める
 
-このルールにより、各タスクが独立したPRとして管理され、レビューとマージが効率化される。
+2. **Phase 1-3: 実装と検証**
+   - 要件確認、実装、テスト、品質チェック
+
+3. **Phase 4: 完了処理**
+   - `git add` で変更をステージング
+   - `git commit` でConventional Commits形式でコミット
+   - `git push` でリモートにプッシュ
+   - `gh pr create` でプルリクエスト作成
+   - ユーザーに完了報告とPR URLを提供
+
+このルールにより、各タスクが独立したブランチとPRとして管理され、レビューとマージが効率化される。
